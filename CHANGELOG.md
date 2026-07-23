@@ -2,6 +2,15 @@
 
 All notable changes to the Starlight Agentic OS command center. Semver.
 
+## [0.2.0] — 2026-07-23
+
+### Added
+- `docs/ecosystem-research-2026-07.md` — populated with the full four-report mid-2026 corpus
+  (Claude Code ecosystem · Codex+Gemini interop · memory/observability/evals+Grok · registries),
+  every NAME—URL—verdict preserved, plus consolidated INSTALL/ADOPT/MINE/SKIP/REGISTER ledgers and
+  a confidence note flagging the four secondary-source claims (Helicone maintenance mode, promptfoo
+  OpenAI acquisition, official Grok Build beta, Gemini→Antigravity `agy`) to verify on GitHub.
+
 ## [0.1.0] — 2026-07-23
 
 Initial scaffold — the command-center charter, strategy, and seeded registry.
