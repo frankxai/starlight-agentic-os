@@ -48,8 +48,9 @@ packs:
     license: MIT
     source_url: https://github.com/frankxai/agentic-creator-os
     origin: original
-    summary: "ACOS v12 open-core — 90 skills, 63 agents, acos-meta + integrity-guard. Twin of FrankX engineering."
-    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    summary: "ACOS v12 open-core — 90 skills, 63 agents, acos-meta + integrity-guard. Twin of FrankX engineering. EXEMPLAR pack for the quality-bar template."
+    status: { install: done, improve: in-progress, indexed: todo, registered: [] }
+    improve_note: "Phase C exemplar: eval gate authored at evals/promptfooconfig.yaml (worked skill: acos-meta v1.0.0); pack.meta.yaml provenance added. Not yet executed. See PACK-QUALITY-TEMPLATE.md."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
 
   - name: arcanea

@@ -56,7 +56,7 @@ The [`registry.yaml`](registry.yaml) is the SSOT. CI (`refresh-status.yml`) writ
 | Pack | Origin | Ver | Install | Improve | Indexed | Registered |
 |---|---|---|:--:|:--:|:--:|---|
 | `frankx` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
-| `agentic-creator-os` | original | 12.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
+| `agentic-creator-os` | original | 12.0.0 | ✅ | 🟡 | ⬜ | ⬜ none |
 | `arcanea` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `starlight-intelligence-system` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `hermes` | original | 0.1.0 | ✅ | 🟡 | ⬜ | ⬜ none |
@@ -102,6 +102,7 @@ python scripts/gen_readme.py --check  # CI gate: fail if the matrix is stale
 | [`STRATEGY.md`](STRATEGY.md) | The flagship reasoning: thesis, convergence finding, reference stack, conventions. |
 | [`ROADMAP.md`](ROADMAP.md) | Phased install → improve → index → register plan (one memory-constrained session per phase). |
 | [`registry.yaml`](registry.yaml) | **SSOT** — every pack with honest lifecycle status + provenance. |
+| [`PACK-QUALITY-TEMPLATE.md`](PACK-QUALITY-TEMPLATE.md) | The copy-me "Improve" pattern: evals + provenance + observability. Worked on `agentic-creator-os` / `acos-meta`. |
 | [`REGISTER-EVERYWHERE.md`](REGISTER-EVERYWHERE.md) | The registries checklist + publish-automation contract. |
 | [`docs/ecosystem-research-2026-07.md`](docs/ecosystem-research-2026-07.md) | Mid-2026 ecosystem intelligence digest (INSTALL / ADOPT / MINE / SKIP verdicts). |
 | [`scripts/gen_readme.py`](scripts/gen_readme.py) | registry.yaml → README matrix + Shields badges. |

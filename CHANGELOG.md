@@ -2,6 +2,25 @@
 
 All notable changes to the Starlight Agentic OS command center. Semver.
 
+## [0.3.0] — 2026-07-23
+
+Phase C (scoped) — establish the quality-bar template on one exemplar.
+
+### Added
+- `PACK-QUALITY-TEMPLATE.md` — the copy-me "Improve" pattern (evals + provenance +
+  observability), worked on exemplar pack `agentic-creator-os`, worked skill `acos-meta`.
+
+### Changed
+- `registry.yaml` — `agentic-creator-os` `status.improve` → `in-progress` with an `improve_note`
+  pointing at its eval config; README matrix regenerated (ACOS now 🟡 in Improve).
+- README repo-map lists `PACK-QUALITY-TEMPLATE.md`.
+
+### Companion pack changes (in `frankxai/agentic-creator-os`, branch `phase-c/quality-bar-acos-meta`)
+- `evals/promptfooconfig.yaml` — promptfoo skill gate for `acos-meta` (2 positive + 1 negative
+  golden cases; dispatch ≥0.85 / trajectory ≥0.90 / integration ≥0.80). Authored, **not executed**.
+- `.github/workflows/skill-evals.yml` — runs the gate on skill-version bumps + enforces thresholds.
+- `pack.meta.yaml` — provenance + lifecycle + gated-skills.
+
 ## [0.2.0] — 2026-07-23
 
 ### Added
