@@ -1,0 +1,318 @@
+# ============================================================================
+# Starlight Agentic OS — Pack Registry (Single Source of Truth)
+# ============================================================================
+# Every agent pack / plugin / skill-cluster Frank runs, builds, or absorbs.
+# The four lifecycle states are tracked per pack under `status`:
+#   install    : present and working            (done | partial | todo)
+#   improve    : hardened to the quality bar     (todo | in-progress | done | deprecate-candidate)
+#                (evals + rails + provenance)
+#   indexed    : discoverable via semantic index (todo | done)
+#   registered : published to operator registries (list; empty = none yet)
+#
+# origin: original (Frank/team authored) | absorbed (vendored upstream) | forked
+# Status seeded 2026-07-23 from the Phase 1-3 portfolio audits. Counts are the
+# corrected maxdepth-2 recount (Phase 2 §1), not the inflated pass-2 figures.
+# CI (refresh-status.yml) writes `registered:` back into this file after publish.
+# ============================================================================
+
+meta:
+  schema_version: 1
+  generated_note: "README status matrix is generated from this file by scripts/gen_readme.py"
+  registries_tracked:
+    - official-mcp-registry      # server.json + mcp-publisher, GitHub-OIDC namespace
+    - glama
+    - smithery
+    - mcp.so
+    - pulsemcp
+    - claude-code-marketplace    # own marketplace.json repo
+    - awesome-lists              # punkpeye/awesome-mcp-servers, VoltAgent, RoggeOhta/awesome-codex-cli
+    - hol-aggregator
+
+packs:
+  # -------------------------------------------------------------------------
+  # CENTERS OF GRAVITY — Frank's real, actively-engineered systems
+  # -------------------------------------------------------------------------
+  - name: frankx
+    repo: frankxai/FrankX
+    version: 0.0.0
+    license: proprietary
+    source_url: https://github.com/frankxai/FrankX
+    origin: original
+    summary: "FrankX Digital Haven — 33 skills, 119 agents, v-swarm + aco-router. Largest personal roster."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: agentic-creator-os
+    repo: frankxai/agentic-creator-os
+    version: 12.0.0
+    license: MIT
+    source_url: https://github.com/frankxai/agentic-creator-os
+    origin: original
+    summary: "ACOS v12 open-core — 90 skills, 63 agents, acos-meta + integrity-guard. Twin of FrankX engineering."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: arcanea
+    repo: frankxai/arcanea-ai-app
+    version: 0.0.0
+    license: proprietary
+    source_url: https://github.com/frankxai/arcanea-ai-app
+    origin: original
+    summary: "Arcanea — 65 skills, 44 agents (incl. Luminor hierarchy). design-verifier runs real Playwright/Lighthouse gates."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: starlight-intelligence-system
+    repo: frankxai/Starlight-Intelligence-System
+    version: 0.0.0
+    license: proprietary
+    source_url: https://github.com/frankxai/Starlight-Intelligence-System
+    origin: original
+    summary: "SIS — 146-agent registry, council/dispatch, multi-MB JSONL dispatch ledger (real usage). Governance-heavy."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  # -------------------------------------------------------------------------
+  # EXECUTORS / GUILDS — runtimes, each guild owns its own runtime
+  # -------------------------------------------------------------------------
+  - name: hermes
+    repo: frankxai/hermes
+    version: 0.1.0
+    license: MIT
+    source_url: https://github.com/frankxai/hermes
+    origin: original
+    summary: "Task-lifecycle executor guild: branch->context->exec->commit->verify->PR over JSONL ledger. ONE guild among several, not the universal executor (Phase 3 scoping)."
+    status: { install: done, improve: in-progress, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: starlight-gravity-engine
+    repo: frankxai/starlight-gravity-engine
+    version: 0.1.0
+    license: MIT
+    source_url: https://github.com/frankxai/starlight-gravity-engine
+    origin: original
+    summary: "Cleanest small pack — 5 agents / 6 commands, no bloat. Reference for how to ship small."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  # -------------------------------------------------------------------------
+  # VERTICAL AGENT TEAMS
+  # -------------------------------------------------------------------------
+  - name: app-studio-team
+    repo: frankxai/frankx-app-forge
+    version: 0.1.0
+    license: proprietary
+    source_url: https://github.com/frankxai/frankx-app-forge
+    origin: original
+    summary: "19 agents / 12 skills — conductor-led product pipeline (scout->strategist->ux/story->craft->gate->build->release). Most complete vertical team on disk."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: gencreator-content-team
+    repo: frankxai/gencreator.ai
+    version: 0.0.0
+    license: proprietary
+    source_url: https://github.com/frankxai/gencreator.ai
+    origin: original
+    summary: "9-agent content team with model-routing cadence. Production-facing but ~2 months stale — resume or document pause."
+    status: { install: partial, improve: todo, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: marine-agent-skills
+    repo: frankxai/marine-agent-skills
+    version: 0.1.0
+    license: MIT
+    source_url: https://github.com/frankxai/marine-agent-skills
+    origin: original
+    summary: "6 skills — small enforced field-mission pipeline (author->verify->ethics->validate->PR) for Ocean Intelligence System."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  # -------------------------------------------------------------------------
+  # PROMPT + MEMORY + OBSERVABILITY SUBSTRATE
+  # -------------------------------------------------------------------------
+  - name: prompt-engine
+    repo: frankxai/prompt-engine
+    version: 0.0.0
+    license: MIT
+    source_url: https://github.com/frankxai/prompt-engine
+    origin: original
+    summary: "14 doctrine agents + 8 documented flows. Execution layer (flows/, bin/hub.mjs) is a stub — real agents, no runner."
+    status: { install: partial, improve: todo, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: prompt-library
+    repo: frankxai/prompt-library
+    version: 0.0.0
+    license: mixed
+    source_url: https://github.com/frankxai/prompt-library
+    origin: forked
+    summary: "393 prompt-pattern dirs — mixed native + harvested (Fabric/chatgpt_*). promptfoo.yaml scaffold present, unrun."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: second-brain-os
+    repo: frankxai/second-brain-os
+    version: 0.0.0
+    license: proprietary
+    source_url: https://github.com/frankxai/second-brain-os
+    origin: original
+    summary: "Real GSD workflow-guard hooks (33) over Obsidian/PARA. One of three competing memory repos — canonical-boundary decision pending."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: starlight-memory
+    repo: frankxai/starlight-memory
+    version: 0.0.0
+    license: proprietary
+    source_url: https://github.com/frankxai/starlight-memory
+    origin: original
+    summary: "Mem0-based memory package. Overlaps second-brain-os / second-brain — needs an explicit boundary before it feeds the index."
+    status: { install: partial, improve: todo, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: sentinel
+    repo: frankxai/sentinel
+    version: 0.0.0
+    license: proprietary
+    source_url: https://github.com/frankxai/sentinel
+    origin: original
+    summary: "5-layer observability product (sensors->judges->synthesizers->surfaces->memory). Candidate to compose with OpenLLMetry/Langfuse rather than duplicate."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  # -------------------------------------------------------------------------
+  # GLOBAL CORE + WELL-ABSORBED EXTERNAL
+  # -------------------------------------------------------------------------
+  - name: global-claude-core
+    repo: local:~/.claude
+    version: 0.0.0
+    license: proprietary
+    source_url: null
+    origin: original
+    summary: "Global ~/.claude — 47 active agents (+18 archived), 27 real Node-backed hooks, 143 commands, 138 SKILL.md dirs. The always-loaded base layer."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: v-swarm
+    repo: frankxai/FrankX
+    version: 0.0.0
+    license: proprietary
+    source_url: https://github.com/frankxai/FrankX
+    origin: original
+    summary: "MISNAMED — a Vercel deployment-lane classifier (real MCP calls, lane table), NOT a multi-agent swarm. Keep for deploy routing; stop calling it swarm."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: superpowers
+    repo: obra/superpowers
+    version: 0.0.0
+    license: MIT
+    source_url: https://github.com/obra/superpowers
+    origin: absorbed
+    summary: "Well-absorbed process skills (brainstorming/TDD/systematic-debugging) with a real running server. Actively enforced, not decorative — keep current."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  # -------------------------------------------------------------------------
+  # ABSORBED-BUT-DORMANT DECORATION — deprecate candidates (Phase 1/2 flagged)
+  # -------------------------------------------------------------------------
+  - name: claude-flow
+    repo: ruvnet/claude-flow
+    version: 3.5.80
+    license: MIT
+    source_url: https://github.com/ruvnet/claude-flow
+    origin: absorbed
+    summary: "Complete dormant upstream clone at ~/sources/claude-flow (real hive-mind + SPARC source), zero active wiring. KEEP as cold-storage reference to mine; do NOT wire whole engine."
+    status: { install: done, improve: deprecate-candidate, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: swarm-orchestration-skill
+    repo: local:~/.claude/skills/swarm-orchestration
+    version: 0.0.0
+    license: MIT
+    source_url: https://github.com/ruvnet/claude-flow
+    origin: absorbed
+    summary: "Doc-shell skill, `author: Claude Flow Team` in frontmatter. No supporting files, points at unregistered tooling. DELETE from active library."
+    status: { install: done, improve: deprecate-candidate, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: swarm-advanced-skill
+    repo: local:~/.claude/skills/swarm-advanced
+    version: 0.0.0
+    license: MIT
+    source_url: https://github.com/ruvnet/claude-flow
+    origin: absorbed
+    summary: "Doc-shell skill (vendored claude-flow). DELETE from active library."
+    status: { install: done, improve: deprecate-candidate, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: hive-mind-advanced-skill
+    repo: local:~/.claude/skills/hive-mind-advanced
+    version: 0.0.0
+    license: MIT
+    source_url: https://github.com/ruvnet/claude-flow
+    origin: absorbed
+    summary: "Doc-shell skill; real hive-mind source exists only in the claude-flow clone. DELETE the shell; mine the clone's consensus math instead."
+    status: { install: done, improve: deprecate-candidate, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: sparc-methodology-skill
+    repo: local:~/.claude/skills/sparc-methodology
+    version: 0.0.0
+    license: MIT
+    source_url: https://github.com/ruvnet/claude-flow
+    origin: absorbed
+    summary: "Doc-only (3,001 words) methodology mirror. DELETE the shell; SPARC phase discipline is worth keeping as a decomposition template only."
+    status: { install: done, improve: deprecate-candidate, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: agentic-jujutsu-skill
+    repo: local:~/.claude/skills/agentic-jujutsu
+    version: 0.0.0
+    license: MIT
+    source_url: null
+    origin: absorbed
+    summary: "Doc-shell skill, prose-only, points at unregistered npm/MCP tooling. DELETE from active library."
+    status: { install: done, improve: deprecate-candidate, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: reasoningbank-agentdb-skill
+    repo: local:~/.claude/skills/reasoningbank-agentdb
+    version: 0.0.0
+    license: MIT
+    source_url: null
+    origin: absorbed
+    summary: "Doc-shell skill. DELETE from active library."
+    status: { install: done, improve: deprecate-candidate, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: model-routing-skill
+    repo: local:~/.claude/skills/model-routing
+    version: 0.0.0
+    license: MIT
+    source_url: null
+    origin: absorbed
+    summary: "Doc-shell skill. DELETE from active library (superseded by real STRATEGY routing doctrine here)."
+    status: { install: done, improve: deprecate-candidate, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: swarm-lumina-skill
+    repo: local:~/.claude/skills/swarm-lumina
+    version: 0.0.0
+    license: proprietary
+    source_url: null
+    origin: original
+    summary: "Pure roleplay stub — Arcanea mythology (Queen/Guardians/Luminors), zero dispatch mechanics. DELETE or move to lore, not orchestration."
+    status: { install: done, improve: deprecate-candidate, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  - name: nine-line-stub-skills
+    repo: local:~/.claude/skills
+    version: 0.0.0
+    license: proprietary
+    source_url: null
+    origin: original
+    summary: "Confirmed 9-line stubs: product-management-expert, nextjs-react-expert, social-media-strategy, video-production-workflow. Frontmatter + one sentence, zero procedure. DELETE (grep for refs first)."
+    status: { install: done, improve: deprecate-candidate, indexed: todo, registered: [] }
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }

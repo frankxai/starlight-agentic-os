@@ -1,0 +1,36 @@
+name: syndicate
+
+# After a successful Official MCP Registry publish, syndicate to the network and
+# open awesome-list PRs, then write `registered:` back into registry.yaml.
+# STUB — wire per REGISTER-EVERYWHERE.md channels 2-6.
+
+on:
+  workflow_run:
+    workflows: ["publish"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      pack:
+        description: "pack name as listed in registry.yaml"
+        required: true
+
+permissions:
+  contents: write        # write-back of status.registered into registry.yaml
+  pull-requests: write   # awesome-list PRs
+
+jobs:
+  syndicate:
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install pyyaml
+      - name: Syndicate (dry-run until wired)
+        run: |
+          PACK="${{ github.event.inputs.pack }}"
+          python scripts/syndicate.py "${PACK:-PLACEHOLDER}" --dry-run || true
+      # TODO(Phase E): implement Glama/Smithery/mcp.so/PulseMCP sync + awesome-list PRs,
+      # then let syndicate.py write status.registered back and run gen_readme.py, commit, push.

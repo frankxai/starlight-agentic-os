@@ -1,0 +1,33 @@
+name: refresh-status
+
+# Keep the README status matrix in sync with registry.yaml, and (Phase E) pull
+# published-state back from the registries into registry.yaml.
+
+on:
+  push:
+    paths:
+      - registry.yaml
+      - scripts/gen_readme.py
+  schedule:
+    - cron: "0 6 * * 1"   # weekly, Mondays 06:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install deps
+        run: pip install pyyaml
+      - name: Verify matrix is current (gate)
+        run: python scripts/gen_readme.py --check
+      # TODO(Phase E): before regenerating, poll each registry for this org's published
+      # servers and write confirmed `registered:` ids back into registry.yaml, then:
+      #   python scripts/gen_readme.py
+      #   git commit + push if changed (guarded so scheduled runs can self-heal the matrix)

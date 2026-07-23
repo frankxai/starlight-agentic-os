@@ -1,0 +1,34 @@
+name: publish
+
+# Publish a pack's MCP server to the Official MCP Registry on a version tag.
+# STUB — wire the mcp-publisher step per REGISTER-EVERYWHERE.md channel 1.
+
+on:
+  push:
+    tags:
+      - "v*.*.*"        # semver tags only — the version IS the contract
+  workflow_dispatch:
+    inputs:
+      pack:
+        description: "pack name as listed in registry.yaml"
+        required: true
+
+permissions:
+  contents: read
+  id-token: write       # GitHub OIDC — the MCP Registry namespace is OIDC-authenticated
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Precondition — pack must be improve=done
+        run: |
+          echo "TODO: parse registry.yaml; fail unless status.improve == 'done' for the pack."
+      - name: Validate .mcp/server.json
+        run: echo "TODO: validate server.json against the official schema."
+      - name: Publish to Official MCP Registry
+        run: |
+          # TODO(Phase E): install mcp-publisher, authenticate via OIDC (namespace = frankxai),
+          #   mcp-publisher publish --file .mcp/server.json
+          echo "TODO: mcp-publisher publish"

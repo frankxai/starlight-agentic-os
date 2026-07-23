@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node (for future marketplace tooling)
+node_modules/
+npm-debug.log*
+
+# Audit / logs / local state
+syndication-log.jsonl
+catalog.json
+*.local.yaml
+.DS_Store
+Thumbs.db
+
+# Secrets — never commit
+.env
+.env.*
+*.secret
+secrets/
