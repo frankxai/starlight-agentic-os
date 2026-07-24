@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Windows Task Scheduler task: run ONE shared starlight-skill-index HTTP service at logon.
+     EDIT the Command + Arguments + WorkingDirectory paths below (python exe + server.py path), then:
+       schtasks /Create /TN "starlight-skill-index" /XML .\starlight-skill-index.xml
+     Serves http://127.0.0.1:8631/mcp for all local CLIs/subagents (one process). -->
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Description>starlight-skill-index — one shared MCP skill router (many clients, one process).</Description>
+    <URI>\starlight-skill-index</URI>
+  </RegistrationInfo>
+  <Triggers>
+    <LogonTrigger>
+      <Enabled>true</Enabled>
+    </LogonTrigger>
+  </Triggers>
+  <Principals>
+    <Principal id="Author">
+      <LogonType>InteractiveToken</LogonType>
+      <RunLevel>LeastPrivilege</RunLevel>
+    </Principal>
+  </Principals>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <AllowHardTerminate>true</AllowHardTerminate>
+    <StartWhenAvailable>true</StartWhenAvailable>
+    <RestartOnFailure>
+      <Interval>PT1M</Interval>
+      <Count>3</Count>
+    </RestartOnFailure>
+    <ExecutionTimeLimit>PT0S</ExecutionTimeLimit>
+    <Enabled>true</Enabled>
+    <Hidden>false</Hidden>
+  </Settings>
+  <Actions Context="Author">
+    <Exec>
+      <!-- EDIT: absolute path to python.exe -->
+      <Command>C:\Path\to\python.exe</Command>
+      <!-- EDIT: absolute path to server.py; the http flag selects the shared service -->
+      <Arguments>"C:\Path\to\starlight-agentic-os\mcp-server\server.py" --http</Arguments>
+      <WorkingDirectory>C:\Path\to\starlight-agentic-os\mcp-server</WorkingDirectory>
+    </Exec>
+  </Actions>
+</Task>

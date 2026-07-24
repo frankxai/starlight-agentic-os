@@ -1,18 +1,19 @@
-# Instrumenting the Starlight fleet (OpenLLMetry → Langfuse + native Claude Code OTel)
+# Instrumenting the Starlight fleet (OpenLLMetry → Phoenix/Langfuse + native Claude Code OTel)
 
-Reference observability stack (locked): **OpenLLMetry** instruments the code →
-**self-hosted Langfuse** is the sink → **native Claude Code OTel**
-(`CLAUDE_CODE_ENABLE_TELEMETRY=1`) covers the CLI itself. Everything speaks OTLP,
-so no vendor lock-in: repoint the endpoint and the same telemetry flows anywhere.
+Reference observability stack: **OpenLLMetry** instruments the code → the **sink**
+(default **Phoenix**, no Docker; optional **Langfuse** heavy tier) → **native Claude
+Code OTel** (`CLAUDE_CODE_ENABLE_TELEMETRY=1`) covers the CLI itself. Everything speaks
+OTLP, so there's no vendor lock-in — this whole guide is sink-agnostic; only the
+endpoint changes between Phoenix and Langfuse.
 
 ```
                          OTLP (http/protobuf)
   Claude Code ───────────────┐
-  Codex / Gemini / Grok ─────┤
-  Python agent code ─────────┤──►  [OTel Collector*]  ──►  Langfuse  ──► ClickHouse
-   (OpenLLMetry SDK)         │        (optional)          (web+worker)   (traces/scores)
-                             │                                │
-                       resource attrs                    Postgres / Redis / MinIO
+  Codex / Gemini / Grok ─────┤        DEFAULT: Phoenix (one process, SQLite/DuckDB, :6006)
+  Python agent code ─────────┤──►  [OTel Collector*]  ──►  ┤
+   (OpenLLMetry SDK)         │        (optional)           HEAVY: Langfuse (Docker: web+worker
+                             │                              +ClickHouse/Postgres/Redis/MinIO)
+                       resource attrs
               service.name=starlight.<cli>.<agent>
   * Collector is optional but recommended once you have >1 sink or want to keep
     credentials out of individual shells (fan-in).
@@ -29,8 +30,10 @@ export CLAUDE_CODE_ENABLE_TELEMETRY=1
 export OTEL_METRICS_EXPORTER=otlp
 export OTEL_LOGS_EXPORTER=otlp
 export OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
-export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:3000/api/public/otel
-export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Basic%20$(printf '%s' 'pk-lf-...:sk-lf-...' | base64)"
+export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:6006          # Phoenix default (no auth)
+# Heavy tier (Langfuse) instead:
+#   export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:3000/api/public/otel
+#   export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Basic%20$(printf '%s' 'pk-lf-...:sk-lf-...' | base64)"
 export OTEL_SERVICE_NAME=starlight.claude-code
 export OTEL_RESOURCE_ATTRIBUTES="service.namespace=starlight,deployment.environment=local,starlight.pack=acos-meta,enduser.id=frank"
 ```

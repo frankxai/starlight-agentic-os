@@ -42,7 +42,17 @@ Configuration (all via environment, no secrets in code)
 
 Run
 ---
-    python server.py            # stdio transport (what MCP clients spawn)
+    python server.py            # stdio (one process per client; single-user local)
+    python server.py --http     # ONE shared service at http://127.0.0.1:8631/mcp
+                                #   (STARLIGHT_HTTP_HOST / STARLIGHT_HTTP_PORT to override;
+                                #    STARLIGHT_TRANSPORT=http|sse|stdio also selects it)
+
+Why the shared HTTP mode exists (RAM)
+-------------------------------------
+stdio spawns a *new server process per client* — every CLI and every subagent
+forks its own copy and (on the vector path) loads its own embedding model. That
+duplicates RAM N times. Running one ``--http`` service and pointing every CLI at
+its URL means one process, one catalog, one model, many clients.
 """
 from __future__ import annotations
 
@@ -626,16 +636,75 @@ def security_report() -> Dict[str, Any]:
     return run_security_report()
 
 
+def warm_singletons() -> None:
+    """Load the catalog + build the fallback ranker ONCE per process.
+
+    Both are memoized (lru_cache keyed by catalog path+mtime), so in a long-running
+    shared server every request reuses the same in-memory index — no per-request
+    rebuild. When the vector path is active, ``index/search.py`` (and its embedding
+    model) is cached in ``sys.modules``, i.e. imported and the model loaded once.
+    Warming here moves that one-time cost to startup instead of the first query.
+    This is what makes ONE shared HTTP server cheap: N clients, one catalog, one
+    model — not N processes each loading their own.
+    """
+    try:
+        get_searcher()  # builds the TF-IDF index once; cached thereafter
+    except Exception as exc:  # never let warm-up crash the server
+        LOG.warning("warm-up skipped: %s", exc)
+
+
+def _select_transport() -> Tuple[str, str, int]:
+    """Choose transport: CLI flag > env > stdio default.
+
+    * stdio (default) — one process per client; fine for a single local user.
+    * streamable-http / sse — ONE shared long-running service on a local port that
+      many CLIs/subagents connect to, so the catalog + model are loaded once, not
+      duplicated per subagent (the RAM-bloat fix).
+    """
+    argv = sys.argv[1:]
+    transport = os.environ.get("STARLIGHT_TRANSPORT", "stdio").lower()
+    if "--http" in argv:
+        transport = "streamable-http"
+    elif "--sse" in argv:
+        transport = "sse"
+    elif "--stdio" in argv:
+        transport = "stdio"
+    if transport in ("http", "streamable-http", "shared"):
+        transport = "streamable-http"
+    host = os.environ.get("STARLIGHT_HTTP_HOST", "127.0.0.1")
+    port = int(os.environ.get("STARLIGHT_HTTP_PORT", "8631"))
+    return transport, host, port
+
+
 def main() -> None:
+    transport, host, port = _select_transport()
     LOG.info(
-        "starting %s v%s (catalog=%s, index=%s, vector=%s)",
+        "starting %s v%s (transport=%s, catalog=%s, index=%s, vector=%s)",
         SERVER_NAME,
         SERVER_VERSION,
+        transport,
         resolve_catalog_path(),
         resolve_index_dir(),
         "on" if db_url() else "off (catalog-fallback)",
     )
-    mcp.run()
+    warm_singletons()  # load catalog/model ONCE, at startup
+
+    if transport == "stdio":
+        mcp.run()  # one process per client — single-user local use
+        return
+
+    # Shared long-running HTTP/SSE service: one process, many clients. Endpoint is
+    # http://<host>:<port>/mcp (streamable-http). Point every CLI at that URL so no
+    # subagent spawns its own server or reloads the catalog/model.
+    try:
+        mcp.settings.host = host
+        mcp.settings.port = port
+    except Exception:  # shim / older SDK without .settings — host/port via env/defaults
+        pass
+    try:
+        mcp.run(transport=transport)
+    except TypeError:  # older FastMCP signature
+        mcp.run(transport)
 
 
 if __name__ == "__main__":

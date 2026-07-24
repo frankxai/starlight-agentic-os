@@ -64,8 +64,25 @@ configured it goes straight to the fallback.
 ```bash
 cd mcp-server
 pip install -r requirements.txt        # core only: the MCP SDK (+ stdlib)
-python server.py                       # serves over stdio (what clients spawn)
+
+# Recommended: ONE shared service, many clients (see "Why shared" below).
+python server.py --http                # http://127.0.0.1:8631/mcp  (one process)
+
+# Or single-user local: stdio (one process per client).
+python server.py                       # serves over stdio
 ```
+
+### Why a shared HTTP server (RAM)
+
+`stdio` spawns **a new server process per client** — every CLI *and every subagent*
+forks its own copy and (on the vector path) loads its own embedding model, so RAM is
+duplicated N times. Run **one** `--http` service and point every CLI at its URL:
+**one process, one catalog, one model, many clients.** The catalog + fallback ranker
+are a lazy singleton warmed once at startup (`warm_singletons()`); the vector model is
+cached in `sys.modules`. Deploy it as an always-on service — see
+[`deploy/`](deploy/) (Windows Task Scheduler + systemd). Override the bind with
+`STARLIGHT_HTTP_HOST` / `STARLIGHT_HTTP_PORT`; `STARLIGHT_TRANSPORT=http|sse|stdio`
+also selects the mode.
 
 Optionally enable the vector path later:
 
@@ -89,46 +106,55 @@ export STARLIGHT_DB_URL="postgresql://user:pass@localhost:5432/starlight_skills"
 
 ## Add it to your AI CLI
 
-Use absolute paths. Point `STARLIGHT_CATALOG` at your `catalog.json`.
+**Preferred — point every CLI at the ONE shared HTTP service** (start it once with
+`python server.py --http`, or install it as an always-on service via [`deploy/`](deploy/)).
+Many clients, one process, no per-subagent model/catalog duplication.
 
 ### Claude Code
 
-One-liner:
-
 ```bash
-claude mcp add starlight-skill-index \
-  --env STARLIGHT_CATALOG=/abs/path/index/catalog.json \
-  -- python /abs/path/mcp-server/server.py
+claude mcp add --transport http starlight-skill-index http://127.0.0.1:8631/mcp
 ```
 
-…or add to `.mcp.json` in your project:
+…or `.mcp.json`:
 
 ```json
 {
   "mcpServers": {
-    "starlight-skill-index": {
-      "command": "python",
-      "args": ["/abs/path/mcp-server/server.py"],
-      "env": { "STARLIGHT_CATALOG": "/abs/path/index/catalog.json" }
-    }
+    "starlight-skill-index": { "type": "http", "url": "http://127.0.0.1:8631/mcp" }
   }
 }
 ```
 
 ### OpenAI Codex CLI
 
-Add to `~/.codex/config.toml`:
+`~/.codex/config.toml`:
 
 ```toml
 [mcp_servers.starlight-skill-index]
-command = "python"
-args = ["/abs/path/mcp-server/server.py"]
-env = { STARLIGHT_CATALOG = "/abs/path/index/catalog.json" }
+url = "http://127.0.0.1:8631/mcp"          # shared HTTP service
 ```
 
 ### Gemini CLI
 
-Add to `~/.gemini/settings.json`:
+`~/.gemini/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "starlight-skill-index": { "httpUrl": "http://127.0.0.1:8631/mcp" }
+  }
+}
+```
+
+Once connected, ask your agent something like *"reconcile QuickBooks against
+Stripe"* — it should call `search_skills`, then `get_skill` on the top result.
+
+<details>
+<summary><b>Alternative — stdio spawn (single-user local, spawns per client)</b></summary>
+
+Use only if you don't want a shared service. Note this spawns one server process
+per client/subagent and duplicates RAM — prefer the shared HTTP mode above.
 
 ```json
 {
@@ -141,9 +167,9 @@ Add to `~/.gemini/settings.json`:
   }
 }
 ```
-
-Once installed, ask your agent something like *"reconcile QuickBooks against
-Stripe"* — it should call `search_skills`, then `get_skill` on the top result.
+Claude Code one-liner: `claude mcp add starlight-skill-index --env STARLIGHT_CATALOG=/abs/path/index/catalog.json -- python /abs/path/mcp-server/server.py`
+(Codex `command`/`args`, Gemini `command`/`args` follow the same stdio shape.)
+</details>
 
 ---
 

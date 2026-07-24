@@ -46,9 +46,11 @@ The specific, sovereign, mostly-self-hostable components chosen for each concern
 
 ### Observability
 - **OpenLLMetry** — instrumentation layer; vendor-neutral OpenTelemetry, so the sink is swappable.
-- **Self-hosted Langfuse** (MIT) — the observability **sink**.
+- **Sink = Arize Phoenix (default, no-Docker)** — `pip install arize-phoenix` + `phoenix serve`, one
+  process, local SQLite/DuckDB, OTLP ingest at `:6006`. Directly answers "no extra Docker."
+  **| Self-hosted Langfuse (optional heavy tier)** — Docker Compose, for team scale / long retention.
 - **Native Claude Code OTel** — enable with `CLAUDE_CODE_ENABLE_TELEMETRY=1`; free, first-party.
-- **Phoenix** — secondary, for eval-time tracing.
+- Because it's all OTLP, start on Phoenix and repoint to Langfuse later with zero re-instrumentation.
 
 ### Evals — *the skill VERSION is the contract*
 - **promptfoo** — per-repo **CI gate**, with a `skill-used` assertion and thresholds:

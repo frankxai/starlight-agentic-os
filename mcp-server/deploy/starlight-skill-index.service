@@ -1,0 +1,23 @@
+[Unit]
+Description=starlight-skill-index — one shared MCP skill router (many clients, one process)
+Documentation=https://github.com/frankxai/starlight-agentic-os/tree/main/mcp-server
+After=network.target
+
+[Service]
+Type=simple
+# EDIT: python path + repo path for your host.
+WorkingDirectory=%h/starlight-agentic-os/mcp-server
+ExecStart=/usr/bin/python3 %h/starlight-agentic-os/mcp-server/server.py --http
+# One shared service on localhost. Override host/port via these if needed.
+Environment=STARLIGHT_HTTP_HOST=127.0.0.1
+Environment=STARLIGHT_HTTP_PORT=8631
+# Optional: point at your catalog explicitly, and enable the vector path with a DB URL.
+# Environment=STARLIGHT_CATALOG=%h/starlight-agentic-os/index/catalog.json
+# Environment=STARLIGHT_DB_URL=postgresql://user:pass@localhost:5432/starlight_skills
+Restart=on-failure
+RestartSec=3
+# Bind is localhost-only; keep the process unprivileged.
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

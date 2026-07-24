@@ -2,6 +2,33 @@
 
 All notable changes to the Starlight Agentic OS command center. Semver.
 
+## [0.6.0] — 2026-07-24
+
+Two architecture fixes + domain inventory.
+
+### Changed — FIX 1: observability without heavy Docker
+- **Arize Phoenix is now the default sink** (`pip install arize-phoenix` + `phoenix serve` — one
+  process, local SQLite/DuckDB, OTLP at :6006, no ClickHouse/Redis/Postgres/MinIO). Langfuse kept
+  as the optional heavy/team tier. Updated `observability/README.md`, `INSTRUMENTATION.md`,
+  `otel.env.example` (OTLP endpoint now defaults to Phoenix), and the `STRATEGY.md` reference line.
+- Added `observability/phoenix-quickstart.md`.
+
+### Changed — FIX 2: MCP server no longer spawns per-subagent
+- `mcp-server/server.py` gains **streamable-HTTP / SSE transport** (`--http`, `STARLIGHT_TRANSPORT`,
+  `STARLIGHT_HTTP_HOST/PORT`, default `127.0.0.1:8631/mcp`) so ONE shared long-running service
+  serves many clients — no per-subagent process/model duplication. Catalog + ranker warmed once as a
+  lazy singleton (`warm_singletons()`); vector model cached in `sys.modules`. **stdio kept** for
+  single-user local use.
+- Added `mcp-server/deploy/` — shared-service deploy: Windows Task Scheduler `.xml` + systemd user
+  unit + `README`. All per-CLI config snippets in `mcp-server/README.md` now point at the shared
+  HTTP URL (stdio demoted to a collapsed "alternative"). 8/8 smoke tests still pass.
+
+### Added
+- `docs/domain-inventory.md` — authoritative domain → project → repo → status map from the live
+  Vercel account (25 custom domains, ~60 projects). **frankx.ai + arcanea.ai homepages flagged
+  APPROVED-DO-NOT-TOUCH**; their subpages + all other sites in scope for the audit swarm.
+  (Note: the named `production-baseline-2026-07-20.md` was not on disk; Vercel API used as source.)
+
 ## [0.5.0] — 2026-07-24
 
 Phase E prep — MCP skill router + portable-pack installer + observability integrated.
