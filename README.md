@@ -51,17 +51,17 @@ The [`registry.yaml`](registry.yaml) is the SSOT. CI (`refresh-status.yml`) writ
 ## Status matrix
 
 <!-- STATUS-MATRIX:START -->
-![packs](https://img.shields.io/badge/packs-27-blue) ![install](https://img.shields.io/badge/install-24%2F27-brightgreen) ![improve](https://img.shields.io/badge/improve-0%2F27-orange) ![indexed](https://img.shields.io/badge/indexed-0%2F27-orange) ![registered](https://img.shields.io/badge/registered-0%2F27-orange) ![deprecate](https://img.shields.io/badge/deprecate-10-yellow)
+![packs](https://img.shields.io/badge/packs-27-blue) ![install](https://img.shields.io/badge/install-24%2F27-brightgreen) ![improve](https://img.shields.io/badge/improve-0%2F27-orange) ![indexed](https://img.shields.io/badge/indexed-5%2F27-green) ![registered](https://img.shields.io/badge/registered-0%2F27-orange) ![deprecate](https://img.shields.io/badge/deprecate-10-yellow)
 
 | Pack | Origin | Ver | Install | Improve | Indexed | Registered |
 |---|---|---|:--:|:--:|:--:|---|
-| `frankx` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
-| `agentic-creator-os` | original | 12.0.0 | ✅ | 🟡 | ⬜ | ⬜ none |
-| `arcanea` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
-| `starlight-intelligence-system` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
+| `frankx` | original | 0.0.0 | ✅ | ⬜ | ✅ | ⬜ none |
+| `agentic-creator-os` | original | 12.0.0 | ✅ | 🟡 | ✅ | ⬜ none |
+| `arcanea` | original | 0.0.0 | ✅ | ⬜ | ✅ | ⬜ none |
+| `starlight-intelligence-system` | original | 0.0.0 | ✅ | ⬜ | ✅ | ⬜ none |
 | `hermes` | original | 0.1.0 | ✅ | 🟡 | ⬜ | ⬜ none |
 | `starlight-gravity-engine` | original | 0.1.0 | ✅ | ⬜ | ⬜ | ⬜ none |
-| `app-studio-team` | original | 0.1.0 | ✅ | ⬜ | ⬜ | ⬜ none |
+| `app-studio-team` | original | 0.1.0 | ✅ | ⬜ | ✅ | ⬜ none |
 | `gencreator-content-team` | original | 0.0.0 | 🟡 | ⬜ | ⬜ | ⬜ none |
 | `marine-agent-skills` | original | 0.1.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `prompt-engine` | original | 0.0.0 | 🟡 | ⬜ | ⬜ | ⬜ none |
@@ -71,7 +71,7 @@ The [`registry.yaml`](registry.yaml) is the SSOT. CI (`refresh-status.yml`) writ
 | `sentinel` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `global-claude-core` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `v-swarm` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
-| `superpowers` | absorbed | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
+| `superpowers` | absorbed | 0.0.0 | ✅ | ⬜ | 🟡 | ⬜ none |
 | `claude-flow` | absorbed | 3.5.80 | ✅ | ⚠️ dep | ⬜ | ⬜ none |
 | `swarm-orchestration-skill` | absorbed | 0.0.0 | ✅ | ⚠️ dep | ⬜ | ⬜ none |
 | `swarm-advanced-skill` | absorbed | 0.0.0 | ✅ | ⚠️ dep | ⬜ | ⬜ none |
@@ -103,6 +103,8 @@ python scripts/gen_readme.py --check  # CI gate: fail if the matrix is stale
 | [`ROADMAP.md`](ROADMAP.md) | Phased install → improve → index → register plan (one memory-constrained session per phase). |
 | [`registry.yaml`](registry.yaml) | **SSOT** — every pack with honest lifecycle status + provenance. |
 | [`PACK-QUALITY-TEMPLATE.md`](PACK-QUALITY-TEMPLATE.md) | The copy-me "Improve" pattern: evals + provenance + observability. Worked on `agentic-creator-os` / `acos-meta`. |
+| [`PACK-INDEX-TEMPLATE.md`](PACK-INDEX-TEMPLATE.md) | The copy-me "Indexed" pattern: catalog → scan → build → search router contract. |
+| [`index/`](index/) | Semantic skill index — `catalog.json` (418 skills, real), security scan (real), pgvector build + search (authored). |
 | [`REGISTER-EVERYWHERE.md`](REGISTER-EVERYWHERE.md) | The registries checklist + publish-automation contract. |
 | [`docs/ecosystem-research-2026-07.md`](docs/ecosystem-research-2026-07.md) | Mid-2026 ecosystem intelligence digest (INSTALL / ADOPT / MINE / SKIP verdicts). |
 | [`scripts/gen_readme.py`](scripts/gen_readme.py) | registry.yaml → README matrix + Shields badges. |

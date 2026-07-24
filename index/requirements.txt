@@ -1,0 +1,19 @@
+# index/requirements.txt — Starlight Agentic OS, Phase D semantic skill index.
+# Python 3.9+ recommended. Install with:  pip install -r index/requirements.txt
+#
+# NOTE: sentence-transformers pulls in torch. On the host, torch will download
+# the appropriate CPU/GPU wheel for the platform. First run also downloads the
+# e5 model weights (~1.1 GB) into the HuggingFace cache; after that it is fully
+# local and offline-capable (set HF_HUB_OFFLINE=1 to enforce).
+
+# --- Embeddings + rerank (all run locally) ---
+sentence-transformers>=2.6.0,<4.0.0
+torch>=2.0.0                      # transitive dep of sentence-transformers; pin for reproducibility
+numpy>=1.24,<3.0
+
+# --- PostgreSQL + pgvector ---
+psycopg[binary]>=3.1,<4.0         # psycopg v3 driver (binary build, no local libpq needed)
+pgvector>=0.2.5                   # registers the vector type / adapts numpy arrays
+
+# --- Catalog generation ---
+PyYAML>=6.0                       # robust SKILL.md frontmatter parsing (gen_catalog falls back if absent)

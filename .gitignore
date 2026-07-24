@@ -10,7 +10,9 @@ npm-debug.log*
 
 # Audit / logs / local state
 syndication-log.jsonl
-catalog.json
+# NOTE: index/catalog.json IS a committed deliverable (day-one discoverability artifact).
+# Only ignore a transient root-level catalog, never the index one.
+/catalog.json
 *.local.yaml
 .DS_Store
 Thumbs.db

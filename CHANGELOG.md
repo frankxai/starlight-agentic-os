@@ -2,6 +2,32 @@
 
 All notable changes to the Starlight Agentic OS command center. Semver.
 
+## [0.4.0] — 2026-07-24
+
+Phase D — semantic skill index (stdlib path executed; vector path authored).
+
+### Added
+- `index/` — the semantic-index implementation (schema.sql, build_index.py, search.py,
+  scan_skill_frontmatter.py, gen_catalog.py, requirements.txt, README) copied from the specialist
+  agent's output, plus `_normalize.py` (attribution + host-path stripping helper).
+- `index/catalog.json` — **REAL day-one catalog: 418 skills** deduped from 493 raw, across
+  `arcanea` (124), `agentic-creator-os` (104), `.claude/plugins` (126), `frankx` (33),
+  `starlight-intelligence-system` (31). Host paths stripped for the public repo.
+- `index/security-scan-report.json` + `index/security-scan-summary.md` — **REAL scan: 418 scanned,
+  3 flagged (1 high, 2 medium), 0 genuine attacks** (all triaged benign — see summary).
+- `PACK-INDEX-TEMPLATE.md` — the copy-me "Indexed" pattern (catalog → scan → build → search).
+
+### Changed
+- `registry.yaml` — `indexed` set for catalogued packs: `done` for `agentic-creator-os`, `arcanea`,
+  `frankx`, `starlight-intelligence-system`, `app-studio-team`; `in-progress` for `superpowers`
+  (benign HIGH false-positive pending CI allow-list). `meta.index` records the catalog. Matrix
+  regenerated (indexed column now 5 done + 1 in-progress).
+- README repo-map lists `PACK-INDEX-TEMPLATE.md` and `index/`.
+
+### Not run (documented)
+- The embedding + pgvector path (`build_index.py` / `search.py` / `schema.sql`) — needs Postgres +
+  pip (torch + ~1.1 GB e5 weights). Exact build command in `PACK-INDEX-TEMPLATE.md` and `index/README.md`.
+
 ## [0.3.0] — 2026-07-23
 
 Phase C (scoped) — establish the quality-bar template on one exemplar.

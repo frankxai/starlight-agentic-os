@@ -18,6 +18,7 @@
 meta:
   schema_version: 1
   generated_note: "README status matrix is generated from this file by scripts/gen_readme.py"
+  index: "index/catalog.json — 418 skills catalogued (Phase D, 2026-07-24); security scan in index/security-scan-summary.md. Vector index (pgvector) authored, not yet built."
   registries_tracked:
     - official-mcp-registry      # server.json + mcp-publisher, GitHub-OIDC namespace
     - glama
@@ -39,7 +40,8 @@ packs:
     source_url: https://github.com/frankxai/FrankX
     origin: original
     summary: "FrankX Digital Haven — 33 skills, 119 agents, v-swarm + aco-router. Largest personal roster."
-    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    status: { install: done, improve: todo, indexed: done, registered: [] }
+    indexed_note: "33 skills in index/catalog.json; scan clean (0 findings)."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
 
   - name: agentic-creator-os
@@ -49,8 +51,9 @@ packs:
     source_url: https://github.com/frankxai/agentic-creator-os
     origin: original
     summary: "ACOS v12 open-core — 90 skills, 63 agents, acos-meta + integrity-guard. Twin of FrankX engineering. EXEMPLAR pack for the quality-bar template."
-    status: { install: done, improve: in-progress, indexed: todo, registered: [] }
+    status: { install: done, improve: in-progress, indexed: done, registered: [] }
     improve_note: "Phase C exemplar: eval gate authored at evals/promptfooconfig.yaml (worked skill: acos-meta v1.0.0); pack.meta.yaml provenance added. Not yet executed. See PACK-QUALITY-TEMPLATE.md."
+    indexed_note: "104 skills in index/catalog.json; scan clean (1 benign medium: higgsfield-operator MCP URL)."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
 
   - name: arcanea
@@ -60,7 +63,8 @@ packs:
     source_url: https://github.com/frankxai/arcanea-ai-app
     origin: original
     summary: "Arcanea — 65 skills, 44 agents (incl. Luminor hierarchy). design-verifier runs real Playwright/Lighthouse gates."
-    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    status: { install: done, improve: todo, indexed: done, registered: [] }
+    indexed_note: "124 skills in index/catalog.json; scan clean (0 findings)."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
 
   - name: starlight-intelligence-system
@@ -70,7 +74,8 @@ packs:
     source_url: https://github.com/frankxai/Starlight-Intelligence-System
     origin: original
     summary: "SIS — 146-agent registry, council/dispatch, multi-MB JSONL dispatch ledger (real usage). Governance-heavy."
-    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    status: { install: done, improve: todo, indexed: done, registered: [] }
+    indexed_note: "31 skills in index/catalog.json (SIS is agent-based; these are its skills). Scan clean (1 benign medium: secret-detector describing its own domain)."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
 
   # -------------------------------------------------------------------------
@@ -106,7 +111,8 @@ packs:
     source_url: https://github.com/frankxai/frankx-app-forge
     origin: original
     summary: "19 agents / 12 skills — conductor-led product pipeline (scout->strategist->ux/story->craft->gate->build->release). Most complete vertical team on disk."
-    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    status: { install: done, improve: todo, indexed: done, registered: [] }
+    indexed_note: "12 skills in index/catalog.json (via .claude/plugins); scan clean (0 findings)."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
 
   - name: gencreator-content-team
@@ -212,7 +218,8 @@ packs:
     source_url: https://github.com/obra/superpowers
     origin: absorbed
     summary: "Well-absorbed process skills (brainstorming/TDD/systematic-debugging) with a real running server. Actively enforced, not decorative — keep current."
-    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    status: { install: done, improve: todo, indexed: in-progress, registered: [] }
+    indexed_note: "19 skills in index/catalog.json (via .claude/plugins). Held at in-progress: scan raised 1 HIGH on using-tmux (exfiltration_intent) — confirmed BENIGN false-positive (matched tmux 'send-keys'). Promote to done once added to the CI allow-list. See index/security-scan-summary.md."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
 
   # -------------------------------------------------------------------------

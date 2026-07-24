@@ -32,7 +32,7 @@ END = "<!-- STATUS-MATRIX:END -->"
 # Lifecycle cell rendering: state value -> glyph
 INSTALL = {"done": "✅", "partial": "🟡", "todo": "⬜"}
 IMPROVE = {"done": "✅", "in-progress": "🟡", "todo": "⬜", "deprecate-candidate": "⚠️ dep"}
-INDEXED = {"done": "✅", "todo": "⬜"}
+INDEXED = {"done": "✅", "in-progress": "🟡", "todo": "⬜"}
 
 
 def badge(label: str, value: str, color: str) -> str:

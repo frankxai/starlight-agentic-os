@@ -1,0 +1,56 @@
+{
+  "scanned": 418,
+  "flagged": 3,
+  "severity_counts": {
+    "low": 0,
+    "medium": 2,
+    "high": 1
+  },
+  "skills": [
+    {
+      "id": "agentic-creator-os:higgsfield-operator",
+      "name": "higgsfield-operator",
+      "path": "higgsfield-operator/SKILL.md",
+      "max_severity": "medium",
+      "findings": [
+        {
+          "rule": "embedded_url",
+          "severity": "medium",
+          "field": "description",
+          "message": "Contains an embedded URL (possible exfil / drive-by instruction target).",
+          "evidence": "... Higgsfield custom connector (https://mcp.higgsfield.ai/mcp)."
+        }
+      ]
+    },
+    {
+      "id": "starlight-intelligence-system:safety/secret-detector",
+      "name": "safety/secret-detector",
+      "path": "safety/secret-detector/SKILL.md",
+      "max_severity": "medium",
+      "findings": [
+        {
+          "rule": "secret_solicitation",
+          "severity": "medium",
+          "field": "description",
+          "message": "References secrets/credentials in routing-visible text.",
+          "evidence": "...ort, file, or vault batch for credentials, API keys, tokens, and sensit..."
+        }
+      ]
+    },
+    {
+      "id": "superpowers:using-tmux-for-interactive-commands",
+      "name": "using-tmux-for-interactive-commands",
+      "path": "cache/superpowers-marketplace/superpowers-lab/0.4.0/skills/using-tmux-for-interactive-commands/SKILL.md",
+      "max_severity": "high",
+      "findings": [
+        {
+          "rule": "exfiltration_intent",
+          "severity": "high",
+          "field": "description",
+          "message": "Solicits sending sensitive data to an external destination.",
+          "evidence": "...through detached sessions and send-keys"
+        }
+      ]
+    }
+  ]
+}
