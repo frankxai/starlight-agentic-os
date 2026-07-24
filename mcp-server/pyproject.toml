@@ -1,0 +1,56 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "starlight-skill-index"
+version = "0.1.0"
+description = "MCP server that turns a large SKILL.md library into a semantic, token-cheap router — search_skills / get_skill / list_packs / security_report."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Frank (frankxai)" }]
+keywords = ["mcp", "model-context-protocol", "skills", "semantic-search", "router", "agent", "fastmcp"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+# Core dependency: the catalog-fallback path needs only the MCP SDK + stdlib.
+dependencies = [
+    "mcp>=1.2.0",
+]
+
+[project.optional-dependencies]
+# The semantic vector path (index/search.py). Heavy; not needed to run the server.
+vector = [
+    "sentence-transformers>=2.2.0",
+    "psycopg[binary]>=3.1",
+    "pgvector>=0.2.5",
+    "numpy>=1.24",
+]
+# Development / test tooling.
+dev = [
+    "pytest>=7.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/frankxai/starlight-skill-index"
+Repository = "https://github.com/frankxai/starlight-skill-index"
+Issues = "https://github.com/frankxai/starlight-skill-index/issues"
+
+[project.scripts]
+starlight-skill-index = "server:main"
+
+# Ship server.py as a single top-level module (no src/ package layout).
+[tool.hatch.build.targets.wheel]
+include = ["server.py"]
+
+[tool.hatch.build.targets.sdist]
+include = ["server.py", "server.json", "README.md", "requirements.txt", "test_server.py"]
+
+[tool.pytest.ini_options]
+addopts = "-q"

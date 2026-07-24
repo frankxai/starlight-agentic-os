@@ -19,6 +19,9 @@ meta:
   schema_version: 1
   generated_note: "README status matrix is generated from this file by scripts/gen_readme.py"
   index: "index/catalog.json — 418 skills catalogued (Phase D, 2026-07-24); security scan in index/security-scan-summary.md. Vector index (pgvector) authored, not yet built."
+  mcp_server: "mcp-server/ = starlight-skill-index (search_skills/get_skill/list_packs/security_report) over index/catalog.json; 8/8 smoke tests pass. Publish-ready — see REGISTER-PLAYBOOK.md."
+  portable: "portable/ = install.sh/ps1 symlinking a pack across ~/.claude, ~/.agents, ~/.gemini skill dirs; AGENTS.md aliasing; acos-meta exemplar is portable-clean (4/4)."
+  observability: "observability/ = self-host Langfuse compose + OpenLLMetry OTel env (authored, not run)."
   registries_tracked:
     - official-mcp-registry      # server.json + mcp-publisher, GitHub-OIDC namespace
     - glama
@@ -77,6 +80,21 @@ packs:
     status: { install: done, improve: todo, indexed: done, registered: [] }
     indexed_note: "31 skills in index/catalog.json (SIS is agent-based; these are its skills). Scan clean (1 benign medium: secret-detector describing its own domain)."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+
+  # -------------------------------------------------------------------------
+  # INFRASTRUCTURE — the command-center's own shippable artifacts
+  # -------------------------------------------------------------------------
+  - name: starlight-skill-index
+    repo: frankxai/starlight-agentic-os
+    version: 0.1.0
+    license: MIT
+    source_url: https://github.com/frankxai/starlight-agentic-os/tree/main/mcp-server
+    origin: original
+    summary: "MCP server (FastMCP) making the 418-skill index routable: search_skills/get_skill/list_packs/security_report, vector->catalog graceful fallback. The queryable skill router itself."
+    status: { install: done, improve: done, indexed: todo, registered: [] }
+    improve_note: "8/8 smoke tests pass (test_server.py); real query against 418-skill catalog verified ('review a github pull request' -> arcanea:github-code-review); server.json validated. FIRST pack at improve=done."
+    registered_note: "Publish-ready. Fire REGISTER-PLAYBOOK.md: mcp-publisher -> official MCP registry (io.github.frankxai) -> syndicate -> marketplace.json."
+    provenance: { checksum: null, added: 2026-07-24, last_reviewed: 2026-07-24 }
 
   # -------------------------------------------------------------------------
   # EXECUTORS / GUILDS — runtimes, each guild owns its own runtime

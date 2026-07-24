@@ -1,0 +1,16 @@
+# starlight-skill-index — runtime dependencies
+#
+# Core: the official MCP Python SDK (provides mcp.server.fastmcp.FastMCP).
+# This is ALL you need for the catalog-fallback path (stdlib TF-IDF ranking).
+mcp>=1.2.0
+
+# --- Optional: the vector path -------------------------------------------------
+# The semantic retriever→reranker (index/search.py) additionally needs these.
+# They are heavy (torch + model weights, ~1GB) and are intentionally NOT required
+# to run the server — it degrades to the stdlib catalog fallback without them.
+# Install with:  pip install -r requirements-vector.txt   (or the [vector] extra)
+#
+#   sentence-transformers>=2.2.0
+#   psycopg[binary]>=3.1
+#   pgvector>=0.2.5
+#   numpy>=1.24

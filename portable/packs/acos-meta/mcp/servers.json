@@ -1,0 +1,17 @@
+{
+  "//": "Canonical MCP definition for the acos-meta pack. One file, rendered per-CLI by the installer. Values may use ${PACK_ROOT}. NO SECRETS — reference env placeholders only.",
+  "mcpServers": {
+    "acos-filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${PACK_ROOT}"],
+      "env": {}
+    },
+    "acos-memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "env": {
+        "MEMORY_FILE_PATH": "${PACK_ROOT}/AGENTS.md"
+      }
+    }
+  }
+}

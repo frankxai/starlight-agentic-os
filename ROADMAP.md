@@ -48,15 +48,19 @@ Stand up the sovereign substrate the whole program runs on.
 - [ ] Flip `indexed: todo → done` per pack as it enters the index.
 - **Exit:** our own agents can semantically discover skills; `indexed` count climbing.
 
-## Phase E — Register everywhere + CI automation  🔲
+## Phase E — Register everywhere + CI automation  🟡 (scaffolded 2026-07-24)
 
-- [ ] Official MCP Registry publish (`server.json` + `mcp-publisher`, GitHub-OIDC namespace).
-- [ ] Syndicate to Glama / Smithery / mcp.so / PulseMCP.
-- [ ] Stand up own Claude Code marketplace repo (`marketplace.json`).
-- [ ] Awesome-list PRs (`punkpeye/awesome-mcp-servers`, VoltAgent, `RoggeOhta/awesome-codex-cli`).
+- [x] **MCP server built + validated** — `mcp-server/starlight-skill-index` (8/8 smoke tests, real
+      418-catalog query verified). First `improve=done` pack.
+- [x] `server.json` authored + validated (namespace `io.github.frankxai`, repo URL fixed to real repo).
+- [x] **Publish sequence authored** in [`REGISTER-PLAYBOOK.md`](REGISTER-PLAYBOOK.md) — the
+      one-command-when-ready package (login → publish → syndicate → marketplace → write-back).
+- [ ] **Fire it** (needs `mcp-publisher` + network + `frankxai` login): official MCP Registry publish.
+- [ ] Syndicate to Glama / Smithery / mcp.so / PulseMCP; awesome-list PRs.
+- [ ] Own Claude Code `marketplace.json`.
 - [ ] `syndicate.py` implements publish + **write-back** of `registered:` into `registry.yaml`.
 - [ ] `refresh-status.yml` runs the write-back + `gen_readme.py` on schedule.
-- **Exit:** first pack `registered:` non-empty and reflected in the matrix without manual edits.
+- **Exit:** `starlight-skill-index` `registered:` non-empty and reflected in the matrix without manual edits.
 
 ## Phase F — Consolidate guilds / executors  🔲
 

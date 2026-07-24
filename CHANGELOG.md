@@ -2,6 +2,33 @@
 
 All notable changes to the Starlight Agentic OS command center. Semver.
 
+## [0.5.0] — 2026-07-24
+
+Phase E prep — MCP skill router + portable-pack installer + observability integrated.
+
+### Added
+- `mcp-server/` — **`starlight-skill-index`** FastMCP server (search_skills / get_skill / list_packs /
+  security_report) with vector→catalog graceful fallback + `server.json` for the official MCP registry
+  (namespace `io.github.frankxai`). **8/8 smoke tests pass**; verified against the real 418-skill catalog.
+- `portable/` — `install.sh` / `install.ps1` symlinking a pack across `~/.claude/skills`,
+  `~/.agents/skills`, `~/.gemini/skills` with `AGENTS.md` aliasing + per-CLI MCP config; the
+  `acos-meta` exemplar is **portable-clean (4/4)**; `PORTABLE-PACK-CONVENTION.md`.
+- `observability/` — self-host Langfuse `docker-compose` + OpenLLMetry `otel.env.example` +
+  `INSTRUMENTATION.md` (authored, not run — secrets via `${VAR:?}` substitution, `CHANGE_ME_*` placeholders).
+- `REGISTER-PLAYBOOK.md` — the authored (not run) Phase E publish sequence.
+- `registry.yaml` — new pack `starlight-skill-index` (**first `improve=done`**: passing smoke tests +
+  validated server.json; publish-ready). `meta` records mcp_server / portable / observability.
+
+### Changed
+- `mcp-server/server.json` `repository.url` corrected from `starlight-skill-index` to the real repo
+  `starlight-agentic-os` (subfolder `mcp-server`) so the registry can verify it under the namespace.
+- README headlines the queryable skill router + portable/observability; ROADMAP Phase E → scaffolded.
+- Matrix regenerated (improve column now 1 done; 28 packs).
+
+### Not run (documented)
+- MCP publish (`mcp-publisher`), syndication, marketplace, PyPI package, Langfuse/OTel stack, and the
+  pgvector vector path — all need network/infra. Fire via `REGISTER-PLAYBOOK.md`.
+
 ## [0.4.0] — 2026-07-24
 
 Phase D — semantic skill index (stdlib path executed; vector path authored).

@@ -1,0 +1,194 @@
+# =============================================================================
+# Starlight Agentic OS — Self-hosted Langfuse (sovereign observability sink)
+# -----------------------------------------------------------------------------
+# Langfuse v3 self-host footprint:
+#   langfuse-web     — UI + API + OTLP ingest endpoint (/api/public/otel)
+#   langfuse-worker  — async ingestion / evaluation / background jobs
+#   postgres         — transactional store (projects, users, config)
+#   clickhouse       — analytical store (traces, observations, scores) — high volume
+#   redis (valkey)   — queue + cache between web and worker
+#   minio            — S3-compatible blob store (event uploads + media)
+#
+# NO SECRETS IN THIS FILE. Copy `otel.env.example` -> `.env` beside this compose
+# and fill the ${PLACEHOLDER} values, then: `docker compose -f docker-compose.langfuse.yml up -d`.
+# Generate secrets with:  openssl rand -hex 32   (SALT, ENCRYPTION_KEY, NEXTAUTH_SECRET)
+# =============================================================================
+
+name: starlight-langfuse
+
+x-clickhouse-env: &clickhouse-env
+  CLICKHOUSE_MIGRATION_URL: clickhouse://clickhouse:9000
+  CLICKHOUSE_URL: http://clickhouse:8123
+  CLICKHOUSE_USER: ${CLICKHOUSE_USER:-clickhouse}
+  CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?set CLICKHOUSE_PASSWORD in .env}
+  CLICKHOUSE_CLUSTER_ENABLED: "false"
+
+x-s3-env: &s3-env
+  LANGFUSE_S3_EVENT_UPLOAD_ENABLED: "true"
+  LANGFUSE_S3_EVENT_UPLOAD_BUCKET: ${LANGFUSE_S3_BUCKET:-langfuse}
+  LANGFUSE_S3_EVENT_UPLOAD_REGION: ${LANGFUSE_S3_REGION:-us-east-1}
+  LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: http://minio:9000
+  LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minio}
+  LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD in .env}
+  LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: "true"
+  LANGFUSE_S3_EVENT_UPLOAD_PREFIX: events/
+  LANGFUSE_S3_MEDIA_UPLOAD_ENABLED: "true"
+  LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: ${LANGFUSE_S3_BUCKET:-langfuse}
+  LANGFUSE_S3_MEDIA_UPLOAD_REGION: ${LANGFUSE_S3_REGION:-us-east-1}
+  LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: http://minio:9000
+  LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minio}
+  LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD in .env}
+  LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: "true"
+  LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: media/
+
+x-langfuse-common-env: &langfuse-common-env
+  DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/${POSTGRES_DB:-langfuse}
+  SALT: ${LANGFUSE_SALT:?set LANGFUSE_SALT (openssl rand -hex 32)}
+  ENCRYPTION_KEY: ${LANGFUSE_ENCRYPTION_KEY:?set LANGFUSE_ENCRYPTION_KEY (openssl rand -hex 32)}
+  REDIS_CONNECTION_STRING: redis://:${REDIS_PASSWORD:?set REDIS_PASSWORD in .env}@redis:6379
+  TELEMETRY_ENABLED: ${LANGFUSE_TELEMETRY_ENABLED:-false}
+  LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES: ${LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES:-false}
+
+services:
+  # --------------------------------------------------------------------------
+  langfuse-web:
+    image: langfuse/langfuse:3
+    restart: unless-stopped
+    depends_on:
+      postgres: { condition: service_healthy }
+      clickhouse: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      minio: { condition: service_healthy }
+    ports:
+      - "${LANGFUSE_PORT:-3000}:3000"    # UI + OTLP ingest: http://localhost:3000/api/public/otel
+    environment:
+      <<: [*langfuse-common-env, *clickhouse-env, *s3-env]
+      NEXTAUTH_URL: ${LANGFUSE_NEXTAUTH_URL:-http://localhost:3000}
+      NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:?set LANGFUSE_NEXTAUTH_SECRET (openssl rand -hex 32)}
+      # Optional bootstrap of a first org/project/api-keys for headless setup:
+      LANGFUSE_INIT_ORG_ID: ${LANGFUSE_INIT_ORG_ID:-}
+      LANGFUSE_INIT_PROJECT_ID: ${LANGFUSE_INIT_PROJECT_ID:-}
+      LANGFUSE_INIT_PROJECT_PUBLIC_KEY: ${LANGFUSE_INIT_PROJECT_PUBLIC_KEY:-}
+      LANGFUSE_INIT_PROJECT_SECRET_KEY: ${LANGFUSE_INIT_PROJECT_SECRET_KEY:-}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/public/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  # --------------------------------------------------------------------------
+  langfuse-worker:
+    image: langfuse/langfuse-worker:3
+    restart: unless-stopped
+    depends_on:
+      postgres: { condition: service_healthy }
+      clickhouse: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      minio: { condition: service_healthy }
+    environment:
+      <<: [*langfuse-common-env, *clickhouse-env, *s3-env]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3030/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  # --------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-langfuse}
+    volumes:
+      - langfuse_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-langfuse}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # --------------------------------------------------------------------------
+  clickhouse:
+    image: clickhouse/clickhouse-server:24-alpine
+    restart: unless-stopped
+    environment:
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-clickhouse}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?set CLICKHOUSE_PASSWORD in .env}
+    ulimits:
+      nofile: { soft: 262144, hard: 262144 }
+    volumes:
+      - langfuse_clickhouse_data:/var/lib/clickhouse
+      - langfuse_clickhouse_logs:/var/log/clickhouse-server
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8123/ping | grep -q Ok || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # --------------------------------------------------------------------------
+  redis:
+    image: valkey/valkey:8-alpine   # drop-in Redis; use redis:7-alpine if preferred
+    restart: unless-stopped
+    command: >
+      --requirepass ${REDIS_PASSWORD:?set REDIS_PASSWORD in .env}
+      --maxmemory-policy noeviction
+    volumes:
+      - langfuse_redis:/data
+    healthcheck:
+      test: ["CMD-SHELL", "valkey-cli -a ${REDIS_PASSWORD} ping | grep -q PONG || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # --------------------------------------------------------------------------
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD in .env}
+    ports:
+      - "${MINIO_API_PORT:-9090}:9000"     # S3 API (host port avoids clashing with clickhouse 9000)
+      - "${MINIO_CONSOLE_PORT:-9091}:9001"  # MinIO web console
+    volumes:
+      - langfuse_minio:/data
+    healthcheck:
+      test: ["CMD-SHELL", "mc ready local || curl -f http://localhost:9000/minio/health/live || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  # --------------------------------------------------------------------------
+  # One-shot: create the Langfuse bucket in MinIO on first bring-up.
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio: { condition: service_healthy }
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 ${MINIO_ROOT_USER:-minio} ${MINIO_ROOT_PASSWORD} &&
+      mc mb --ignore-existing local/${LANGFUSE_S3_BUCKET:-langfuse} &&
+      echo 'bucket ready' "
+    restart: "no"
+
+volumes:
+  langfuse_postgres:
+  langfuse_clickhouse_data:
+  langfuse_clickhouse_logs:
+  langfuse_redis:
+  langfuse_minio:
+
+# -----------------------------------------------------------------------------
+# NOTE: Claude Code / CLIs send OTLP to  http://localhost:3000/api/public/otel
+#       (traces -> /v1/traces, metrics -> /v1/metrics) authenticated with Basic
+#       auth = base64("pk-lf-...:sk-lf-..."). See otel.env.example + INSTRUMENTATION.md.
+#       For a fan-in collector in front of Langfuse, add an OpenTelemetry Collector
+#       service and point CLIs at it instead (recommended once you have >1 sink).
+# -----------------------------------------------------------------------------

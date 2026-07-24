@@ -48,10 +48,35 @@ The [`registry.yaml`](registry.yaml) is the SSOT. CI (`refresh-status.yml`) writ
 
 ---
 
+## The queryable skill router (headline capability)
+
+The command center now ships **[`mcp-server/`](mcp-server/) — `starlight-skill-index`**, an MCP
+server that turns the 418-skill index into four tools any MCP-speaking CLI can call:
+
+| Tool | What it does |
+|---|---|
+| `search_skills(query, k)` | Ranked best-matching skills for a task — **load one body instead of scanning the catalog** (the token-economics win). |
+| `get_skill(id)` | Full metadata + body preview for one skill. |
+| `list_packs()` | Map of the library (418 skills · 8 packs). |
+| `security_report()` | Live frontmatter security scan (supply-chain safety). |
+
+It **degrades gracefully**: with no database it uses a stdlib TF-IDF catalog fallback (works today,
+verified — `"review a github pull request"` → `arcanea:github-code-review`); set `STARLIGHT_DB_URL`
+to flip to the pgvector semantic path once built. Per-CLI config snippets in
+[`mcp-server/README.md`](mcp-server/README.md); publish sequence in [`REGISTER-PLAYBOOK.md`](REGISTER-PLAYBOOK.md).
+
+**Portable packs** — [`portable/`](portable/) symlinks one pack across `~/.claude/skills`,
+`~/.agents/skills`, and `~/.gemini/skills` with `AGENTS.md` aliasing and per-CLI MCP config, so a
+pack is authored once and runs everywhere (the tripod, made real). The `acos-meta` exemplar is
+portable-clean. **Observability** — [`observability/`](observability/) self-hosts Langfuse +
+OpenLLMetry OTel (authored).
+
+---
+
 ## Status matrix
 
 <!-- STATUS-MATRIX:START -->
-![packs](https://img.shields.io/badge/packs-27-blue) ![install](https://img.shields.io/badge/install-24%2F27-brightgreen) ![improve](https://img.shields.io/badge/improve-0%2F27-orange) ![indexed](https://img.shields.io/badge/indexed-5%2F27-green) ![registered](https://img.shields.io/badge/registered-0%2F27-orange) ![deprecate](https://img.shields.io/badge/deprecate-10-yellow)
+![packs](https://img.shields.io/badge/packs-28-blue) ![install](https://img.shields.io/badge/install-25%2F28-brightgreen) ![improve](https://img.shields.io/badge/improve-1%2F28-green) ![indexed](https://img.shields.io/badge/indexed-5%2F28-green) ![registered](https://img.shields.io/badge/registered-0%2F28-orange) ![deprecate](https://img.shields.io/badge/deprecate-10-yellow)
 
 | Pack | Origin | Ver | Install | Improve | Indexed | Registered |
 |---|---|---|:--:|:--:|:--:|---|
@@ -59,6 +84,7 @@ The [`registry.yaml`](registry.yaml) is the SSOT. CI (`refresh-status.yml`) writ
 | `agentic-creator-os` | original | 12.0.0 | ✅ | 🟡 | ✅ | ⬜ none |
 | `arcanea` | original | 0.0.0 | ✅ | ⬜ | ✅ | ⬜ none |
 | `starlight-intelligence-system` | original | 0.0.0 | ✅ | ⬜ | ✅ | ⬜ none |
+| `starlight-skill-index` | original | 0.1.0 | ✅ | ✅ | ⬜ | ⬜ none |
 | `hermes` | original | 0.1.0 | ✅ | 🟡 | ⬜ | ⬜ none |
 | `starlight-gravity-engine` | original | 0.1.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `app-studio-team` | original | 0.1.0 | ✅ | ⬜ | ✅ | ⬜ none |
@@ -83,7 +109,7 @@ The [`registry.yaml`](registry.yaml) is the SSOT. CI (`refresh-status.yml`) writ
 | `swarm-lumina-skill` | original | 0.0.0 | ✅ | ⚠️ dep | ⬜ | ⬜ none |
 | `nine-line-stub-skills` | original | 0.0.0 | ✅ | ⚠️ dep | ⬜ | ⬜ none |
 
-_Legend: ✅ done · 🟡 partial/in-progress · ⬜ todo · ⚠️ dep = deprecate-candidate. 27 packs · 24 installed · 10 flagged for deprecation. Generated from `registry.yaml` by `scripts/gen_readme.py` — do not edit by hand._
+_Legend: ✅ done · 🟡 partial/in-progress · ⬜ todo · ⚠️ dep = deprecate-candidate. 28 packs · 25 installed · 10 flagged for deprecation. Generated from `registry.yaml` by `scripts/gen_readme.py` — do not edit by hand._
 <!-- STATUS-MATRIX:END -->
 
 Regenerate with:
@@ -105,7 +131,11 @@ python scripts/gen_readme.py --check  # CI gate: fail if the matrix is stale
 | [`PACK-QUALITY-TEMPLATE.md`](PACK-QUALITY-TEMPLATE.md) | The copy-me "Improve" pattern: evals + provenance + observability. Worked on `agentic-creator-os` / `acos-meta`. |
 | [`PACK-INDEX-TEMPLATE.md`](PACK-INDEX-TEMPLATE.md) | The copy-me "Indexed" pattern: catalog → scan → build → search router contract. |
 | [`index/`](index/) | Semantic skill index — `catalog.json` (418 skills, real), security scan (real), pgvector build + search (authored). |
+| [`mcp-server/`](mcp-server/) | **`starlight-skill-index`** MCP server — the queryable skill router (search/get/list/security). 8/8 smoke tests pass. |
+| [`portable/`](portable/) | Portable-pack installer — one pack across Claude/Codex/Gemini via symlinks + `AGENTS.md` aliasing. `acos-meta` exemplar. |
+| [`observability/`](observability/) | Self-host Langfuse compose + OpenLLMetry OTel env (authored, not run). |
 | [`REGISTER-EVERYWHERE.md`](REGISTER-EVERYWHERE.md) | The registries checklist + publish-automation contract. |
+| [`REGISTER-PLAYBOOK.md`](REGISTER-PLAYBOOK.md) | The one-command-when-ready Phase E publish sequence for `starlight-skill-index`. |
 | [`docs/ecosystem-research-2026-07.md`](docs/ecosystem-research-2026-07.md) | Mid-2026 ecosystem intelligence digest (INSTALL / ADOPT / MINE / SKIP verdicts). |
 | [`scripts/gen_readme.py`](scripts/gen_readme.py) | registry.yaml → README matrix + Shields badges. |
 | [`scripts/syndicate.py`](scripts/syndicate.py) | Publish a pack to the registries + write status back (contract defined; publish TODO). |

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "name": "io.github.frankxai/starlight-skill-index",
+  "description": "Semantic router over a large SKILL.md library. search_skills returns the best-matching skills for a task so an agent loads one skill body instead of scanning the whole catalog — cutting skill-routing token cost. Also exposes get_skill, list_packs, and a frontmatter security_report. Degrades gracefully to a stdlib catalog fallback when the pgvector store isn't built.",
+  "status": "active",
+  "version": "0.1.0",
+  "repository": {
+    "url": "https://github.com/frankxai/starlight-agentic-os",
+    "source": "github",
+    "subfolder": "mcp-server"
+  },
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "starlight-skill-index",
+      "version": "0.1.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "STARLIGHT_CATALOG",
+          "description": "Absolute path to catalog.json (the skill index). If unset, the server auto-discovers ../index/catalog.json or ./catalog.json.",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "STARLIGHT_INDEX_DIR",
+          "description": "Directory containing search.py and scan_skill_frontmatter.py. Auto-discovered next to the server if unset.",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "STARLIGHT_DB_URL",
+          "description": "PostgreSQL+pgvector connection URL. Its presence enables the semantic vector path; without it the server uses the stdlib catalog fallback. Secret — provide via your MCP client's secret store, never commit it.",
+          "isRequired": false,
+          "isSecret": true
+        },
+        {
+          "name": "STARLIGHT_SCAN_REPORT",
+          "description": "Path to a cached scan_report.json from scan_skill_frontmatter.py. If unset, security_report runs the scan live over the catalog.",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "STARLIGHT_SKILLS_ROOT",
+          "description": "Base directory used to resolve a skill's relative path to its on-disk body when body_path is absent.",
+          "isRequired": false,
+          "isSecret": false
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "tool": "manual",
+      "provenance": {
+        "namespaceVerification": "github-oauth",
+        "note": "Namespace io.github.frankxai is verified by authenticating with the GitHub account 'frankxai' via `mcp-publisher login github`. The repository above lives under the same GitHub owner, which the registry checks against the verified namespace."
+      },
+      "capabilities": {
+        "tools": [
+          "search_skills",
+          "get_skill",
+          "list_packs",
+          "security_report"
+        ]
+      }
+    }
+  }
+}
