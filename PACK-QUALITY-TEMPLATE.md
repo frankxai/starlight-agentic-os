@@ -53,10 +53,11 @@ See the worked example: [`agentic-creator-os/evals/promptfooconfig.yaml`](https:
    `skill_version`.
 4. Set `CLAUDE_CODE_ENABLE_TELEMETRY=1` in CI env and your shell; point OTel at Phoenix (or the
    explicitly selected team sink) and retain one inspectable live trace receipt.
-5. Record a SHA-256 provenance checksum and central `improve_receipts` for `eval`, `safety`, and
-   `observability`.
+5. Record a SHA-256 provenance checksum, a non-empty central `improve_note`, and central
+   `improve_receipts` for `eval`, `safety`, and `observability`. Each receipt points to a
+   repository-contained regular evidence file and records the SHA-256 of that file's bytes.
 6. Flip the pack's central status: `registry.yaml` → `status.improve: in-progress` while cases are
-   being written, `done` only after all flagship gates pass in CI and all receipts resolve.
+   being written, `done` only after all flagship gates pass in CI and every receipt resolves.
 
 ---
 

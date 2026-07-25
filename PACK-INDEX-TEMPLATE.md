@@ -70,8 +70,9 @@ Optional `--pack` / `--maturity` push metadata filters into SQL before ranking. 
    safety, and provenance receipts. Catalog presence is only staging evidence.
 5. **Build and verify discovery** — execute the chosen production retrieval path, prove representative
    queries, and record the receipt.
-6. **Set status** — only then flip `indexed: todo → done`. A HIGH finding, stale exception, failed
-   query receipt, or incomplete improvement keeps the pack at `todo`.
+6. **Set status** — only then flip `indexed: todo/in-progress → done`. A HIGH finding, stale
+   exception, failed query receipt, or incomplete improvement keeps the pack in its appropriate
+   nonterminal state.
 
 ---
 

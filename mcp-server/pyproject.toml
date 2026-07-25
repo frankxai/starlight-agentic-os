@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling==1.31.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -61,6 +61,7 @@ include = [
 include = [
     "server.py",
     "server.json",
+    "server.schema.json",
     "README.md",
     "requirements.txt",
     "test_server.py",

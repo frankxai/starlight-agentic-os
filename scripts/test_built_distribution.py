@@ -6,6 +6,7 @@ import json
 import os
 import subprocess
 import sys
+import tarfile
 import tempfile
 import venv
 from pathlib import Path
@@ -30,6 +31,43 @@ def main() -> int:
         )
         return 1
     wheel = wheels[0].resolve()
+    sdists = sorted(DIST.glob("starlight_skill_index-*.tar.gz"))
+    if len(sdists) != 1:
+        print(
+            f"BLOCK expected exactly one built sdist in {DIST}, found {len(sdists)}",
+            file=sys.stderr,
+        )
+        return 1
+    sdist = sdists[0].resolve()
+
+    sdist_sources = {
+        "server.json": ROOT / "mcp-server/server.json",
+        "server.schema.json": ROOT / "mcp-server/server.schema.json",
+        "catalog.json": ROOT / "index/catalog.json",
+        "scan_skill_frontmatter.py": ROOT / "index/scan_skill_frontmatter.py",
+        "security-allowlist.json": ROOT / "index/security-allowlist.json",
+    }
+    with tarfile.open(sdist, "r:gz") as archive:
+        members = archive.getmembers()
+        for filename, source in sdist_sources.items():
+            matches = [
+                member
+                for member in members
+                if member.isfile() and member.name.endswith(f"/{filename}")
+            ]
+            if len(matches) != 1:
+                print(
+                    f"BLOCK sdist expected one {filename}, found {len(matches)}",
+                    file=sys.stderr,
+                )
+                return 1
+            extracted = archive.extractfile(matches[0])
+            if extracted is None or extracted.read() != source.read_bytes():
+                print(
+                    f"BLOCK sdist {filename} differs from its verified source",
+                    file=sys.stderr,
+                )
+                return 1
 
     with tempfile.TemporaryDirectory(prefix="starlight-wheel-smoke-") as directory:
         temp = Path(directory)
@@ -97,14 +135,25 @@ print(json.dumps({
             print(smoke.stdout + smoke.stderr, file=sys.stderr)
             return 1
 
+    expected_catalog = json.loads(
+        (ROOT / "index/catalog.json").read_text(encoding="utf-8")
+    )
+    expected_allowlist = json.loads(
+        (ROOT / "index/security-allowlist.json").read_text(encoding="utf-8")
+    )
     checks = {
         "bundled catalog resolved": bool(receipt["catalog_path"]),
-        "418 skills loaded": receipt["catalog_count"] == 418,
+        "bundled catalog count matches source": (
+            receipt["catalog_count"] == len(expected_catalog)
+        ),
         "catalog fallback active": receipt["search_mode"] == "catalog-fallback",
         "search returned results": bool(receipt["search_ids"]),
         "security report available": receipt["security_available"] is True,
         "zero unallowlisted high findings": receipt["security_high"] == 0,
-        "one exact exception applied": receipt["allowlisted_count"] == 1,
+        "allowlisted count matches source": (
+            receipt["allowlisted_count"] == len(expected_allowlist["entries"])
+        ),
+        "sdist publication metadata matches source": True,
     }
     failed = [name for name, passed in checks.items() if not passed]
     for name, passed in checks.items():

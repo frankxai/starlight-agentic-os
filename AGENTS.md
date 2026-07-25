@@ -40,8 +40,11 @@ repository still matches that evidence.
 `indexed: done`; production-index status requires `improve: done` first.
 
 `improve: done` requires a non-null provenance checksum and inspectable
-`improve_receipts` for `eval`, `safety`, and `observability`. Authored configs,
-passing smoke tests, or a narrative note alone are not completion receipts.
+`improve_receipts` for `eval`, `safety`, and `observability`. Every receipt is an
+object whose `ref` identifies a repository-contained regular file and whose
+`sha256` matches the file's bytes. Remote URLs, missing files, directories,
+authored configs, passing smoke tests, bare strings, or a narrative note alone
+are not completion receipts.
 
 ## Required verification
 
@@ -49,8 +52,10 @@ Before opening or updating a pull request, run:
 
 ```bash
 python scripts/verify_repo.py
+python scripts/validate_server_json.py
 python mcp-server/test_server.py
 python index/test_scan_skill_frontmatter.py
+python scripts/test_verify_repo_contract.py
 python -m compileall -q index mcp-server scripts
 python scripts/sync_mcp_assets.py --check
 python -m build --wheel --sdist mcp-server
@@ -59,8 +64,8 @@ python scripts/test_built_distribution.py
 
 `scripts/verify_repo.py` is the repository-wide gate. It verifies registry
 schema and lifecycle values, generated README freshness, catalog and scan
-integrity, public-path hygiene, MCP version/provenance alignment, and declared
-repository paths.
+integrity, public-path hygiene, official MCP server-schema validity,
+MCP version/provenance alignment, and declared repository paths.
 
 ## Security findings
 

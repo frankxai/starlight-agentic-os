@@ -48,7 +48,7 @@ exists yet.
 
 1. **Input:** a pack name present in `registry.yaml`.
 2. **Preconditions:** `improve == done` AND `indexed == done` AND a clean semver tag exists AND
-   `.mcp/server.json` validates against the official schema.
+   `mcp-server/server.json` validates against the official schema for this pack.
 3. **Publish:** for each target registry not already in `status.registered`, run its publish step
    (idempotent — already-registered targets are skipped).
 4. **Write-back:** append each newly-published registry id to `status.registered`; bump
@@ -65,7 +65,7 @@ exists yet.
 Pack: <name>   Version: <semver>
 [ ] improve == done (evals passing, provenance recorded)
 [ ] indexed == done (production discovery receipt recorded)
-[ ] .mcp/server.json validates
+[ ] mcp-server/server.json validates
 [ ] Official MCP Registry (mcp-publisher, OIDC namespace = frankxai)
 [ ] Glama
 [ ] Smithery

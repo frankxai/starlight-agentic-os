@@ -1,9 +1,10 @@
 # Register Playbook — the one-command-when-ready Phase E sequence
 
 *The exact publish sequence for `starlight-skill-index` (the MCP server in [`mcp-server/`](mcp-server/)).
-**Authored, NOT run** — nothing here has been executed. Fire it from a machine with `mcp-publisher`,
-network, and the `frankxai` GitHub login. This is the operator checklist; the reusable contract lives
-in [`REGISTER-EVERYWHERE.md`](REGISTER-EVERYWHERE.md).*
+Repository and clean-install distribution verification have run; external publication has not.
+Fire the publication steps only from a machine with `mcp-publisher`, network, and the `frankxai`
+GitHub login. This is the operator checklist; the reusable contract lives in
+[`REGISTER-EVERYWHERE.md`](REGISTER-EVERYWHERE.md).*
 
 > **Preconditions (verify before firing):**
 > - Pack `improve == done` (**not yet satisfied**; package tests pass, but eval, provenance
@@ -19,7 +20,7 @@ in [`REGISTER-EVERYWHERE.md`](REGISTER-EVERYWHERE.md).*
 
 ## Step 0 — Decide the package channel (one-time)
 
-`server.json` declares a `pypi` package with `runtimeHint: uvx`. Two honest options:
+`server.json` declares a `pypi` package with `runtime_hint: uvx`. Two honest options:
 
 - **(a) Publish to PyPI first** (matches the current `server.json`):
   ```bash
@@ -28,7 +29,7 @@ in [`REGISTER-EVERYWHERE.md`](REGISTER-EVERYWHERE.md).*
   python -m twine upload dist/*   # requires a PyPI account/token for 'starlight-skill-index'
   ```
 - **(b) Switch to a GitHub-source package** (no PyPI needed) — edit `mcp-server/server.json`
-  `packages[0]` to a `registryType: "oci"`/github source, or ship as an `mcpb` bundle. Simpler if
+  `packages[0]` to a `registry_type: "oci"`/github source, or ship as an `mcpb` bundle. Simpler if
   you don't want a PyPI release. **Pick one before step 2.**
 
 ---
@@ -117,6 +118,7 @@ to flip to the stronger vector path once the pgvector index is built.
 
 ---
 
-*Nothing in this playbook has been executed. Run it only after both `improve: done` and
-`indexed: done` receipts exist and Frank is on a networked machine with `mcp-publisher` installed
-and the `frankxai` GitHub login available.*
+*Repository and clean-install distribution verification have passed, including the local
+`server.json` contract checks. External publication has not been executed. Run the publication
+steps only after both `improve: done` and `indexed: done` receipts exist and Frank is on a
+networked machine with `mcp-publisher` installed and the `frankxai` GitHub login available.*

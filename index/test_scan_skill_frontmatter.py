@@ -105,11 +105,25 @@ def test_changed_evidence_invalidates_exception(tmp: Path) -> None:
     )
 
 
+def test_non_object_allowlist_fails_closed(tmp: Path) -> None:
+    catalog = tmp / "catalog.json"
+    allowlist = tmp / "allowlist.json"
+    _write_json(catalog, [MALICIOUS])
+    _write_json(allowlist, [])
+    assert (
+        _run(
+            ["--catalog", str(catalog), "--allowlist", str(allowlist)]
+        )
+        == 1
+    )
+
+
 def main() -> int:
     tests = [
         test_unallowlisted_high_finding_blocks,
         test_exact_exception_allows_only_one_finding,
         test_changed_evidence_invalidates_exception,
+        test_non_object_allowlist_fails_closed,
     ]
     failed = 0
     for test in tests:

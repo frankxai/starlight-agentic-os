@@ -13,6 +13,10 @@ All notable changes to the Starlight Agentic OS command center. Semver.
   exception; stale or duplicate exceptions fail.
 - Generated MCP package assets and a clean-install distribution smoke test, so the wheel remains
   useful without a source-tree `STARLIGHT_CATALOG` override.
+- Review hardening for non-persistent checkout credentials, pinned CI build tooling, hashed
+  completion receipts, traversal-safe catalog paths, and structurally current scan reports.
+- Official MCP registry-schema validation against a pinned vendored schema, plus receipt gates that
+  open repository-contained evidence and recompute its SHA-256 before completion can pass.
 
 ### Corrected
 - MCP package links now point to the real `starlight-agentic-os/mcp-server` source.

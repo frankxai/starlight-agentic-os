@@ -9,7 +9,7 @@ The publish/write-back contract this script MUST honor:
   2. PRECONDS   : pack.status.improve == "done"  (never syndicate un-hardened packs)
                   AND pack.status.indexed == "done" (never skip lifecycle stages)
                   AND pack.version is a clean semver tag that exists in the repo.
-                  AND .mcp/server.json validates against the official schema.
+                  AND mcp-server/server.json validates against the official schema.
   3. PUBLISH    : for each target registry not already in status.registered:
                     - official-mcp-registry : `mcp-publisher publish` (GitHub-OIDC namespace)
                     - glama / smithery / mcp.so / pulsemcp : syndication API / PR

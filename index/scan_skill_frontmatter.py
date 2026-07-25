@@ -174,28 +174,28 @@ _TEXT_RULES: List[tuple] = [
 
 # Zero-width and bidi control characters that can hide instructions.
 _INVISIBLE_CHARS = {
-    "​": "ZERO WIDTH SPACE",
-    "‌": "ZERO WIDTH NON-JOINER",
-    "‍": "ZERO WIDTH JOINER",
-    "⁠": "WORD JOINER",
-    "﻿": "ZERO WIDTH NO-BREAK SPACE / BOM",
-    "‪": "LEFT-TO-RIGHT EMBEDDING",
-    "‫": "RIGHT-TO-LEFT EMBEDDING",
-    "‬": "POP DIRECTIONAL FORMATTING",
-    "‭": "LEFT-TO-RIGHT OVERRIDE",
-    "‮": "RIGHT-TO-LEFT OVERRIDE",
-    "⁦": "LEFT-TO-RIGHT ISOLATE",
-    "⁧": "RIGHT-TO-LEFT ISOLATE",
-    "⁨": "FIRST STRONG ISOLATE",
-    "⁩": "POP DIRECTIONAL ISOLATE",
+    "\u200B": "ZERO WIDTH SPACE",
+    "\u200C": "ZERO WIDTH NON-JOINER",
+    "\u200D": "ZERO WIDTH JOINER",
+    "\u2060": "WORD JOINER",
+    "\uFEFF": "ZERO WIDTH NO-BREAK SPACE / BOM",
+    "\u202A": "LEFT-TO-RIGHT EMBEDDING",
+    "\u202B": "RIGHT-TO-LEFT EMBEDDING",
+    "\u202C": "POP DIRECTIONAL FORMATTING",
+    "\u202D": "LEFT-TO-RIGHT OVERRIDE",
+    "\u202E": "RIGHT-TO-LEFT OVERRIDE",
+    "\u2066": "LEFT-TO-RIGHT ISOLATE",
+    "\u2067": "RIGHT-TO-LEFT ISOLATE",
+    "\u2068": "FIRST STRONG ISOLATE",
+    "\u2069": "POP DIRECTIONAL ISOLATE",
 }
 
 # Non-ASCII letters that look like ASCII (homoglyph confusables).
 _HOMOGLYPHS = {
-    "а", "е", "о", "р", "с", "х", "у",  # Cyrillic a e o p c x y
-    "А", "Е", "О", "Р", "С", "Х",           # Cyrillic caps
-    "Α", "Β", "Ε", "Ο", "Ρ", "Τ",           # Greek caps
-    "α", "ο", "ρ", "ν",                                 # Greek small
+    "\u0430", "\u0435", "\u043E", "\u0440", "\u0441", "\u0445", "\u0443",
+    "\u0410", "\u0415", "\u041E", "\u0420", "\u0421", "\u0425",
+    "\u0391", "\u0392", "\u0395", "\u039F", "\u03A1", "\u03A4",
+    "\u03B1", "\u03BF", "\u03C1", "\u03BD",
 }
 
 
@@ -334,7 +334,11 @@ def _apply_allowlist(
         return []
 
     raw = json.loads(allowlist_path.read_text(encoding="utf-8"))
-    if raw.get("schema_version") != 1 or not isinstance(raw.get("entries"), list):
+    if (
+        not isinstance(raw, dict)
+        or raw.get("schema_version") != 1
+        or not isinstance(raw.get("entries"), list)
+    ):
         raise ValueError("allowlist must have schema_version=1 and an entries array")
 
     allowed: Dict[tuple[str, str, str], Dict[str, object]] = {}

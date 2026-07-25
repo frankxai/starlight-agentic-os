@@ -2,6 +2,7 @@
 """Fail-closed verification for the Starlight Agentic OS command center."""
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import subprocess
@@ -19,6 +20,7 @@ SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
 INSTALL_STATES = {"done", "partial", "todo"}
 IMPROVE_STATES = {"done", "in-progress", "todo", "deprecate-candidate"}
 INDEXED_STATES = {"done", "in-progress", "todo"}
+PLACEHOLDER_RECEIPTS = {"pending", "todo", "tbd", "n/a", "none", "null"}
 REQUIRED_PATHS = (
     "AGENTS.md",
     "CLAUDE.md",
@@ -31,10 +33,12 @@ REQUIRED_PATHS = (
     "index/security-allowlist.json",
     "mcp-server/server.py",
     "mcp-server/server.json",
+    "mcp-server/server.schema.json",
     "mcp-server/pyproject.toml",
     "mcp-server/catalog.json",
     "mcp-server/scan_skill_frontmatter.py",
     "mcp-server/security-allowlist.json",
+    "scripts/validate_server_json.py",
     ".github/workflows/verify.yml",
 )
 
@@ -61,6 +65,65 @@ def _load_registry() -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ValueError("registry.yaml must contain a mapping")
     return value
+
+
+def _valid_sha256(value: object) -> bool:
+    return isinstance(value, str) and bool(
+        re.fullmatch(r"(?:sha256:)?[0-9a-f]{64}", value)
+    )
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _receipt_is_inspectable(value: object, *, root: Path = ROOT) -> bool:
+    if not isinstance(value, dict):
+        return False
+    ref = value.get("ref")
+    if not isinstance(ref, str) or not ref.strip():
+        return False
+    normalized = ref.strip()
+    if normalized.lower() in PLACEHOLDER_RECEIPTS:
+        return False
+    posix = normalized.replace("\\", "/")
+    path = PurePosixPath(posix)
+    if (
+        path.is_absolute()
+        or not path.parts
+        or ".." in path.parts
+        or re.match(r"^[A-Za-z][A-Za-z0-9+.-]*:", posix)
+        or posix.startswith("~/")
+    ):
+        return False
+    expected = value.get("sha256")
+    if not _valid_sha256(expected):
+        return False
+    root_resolved = root.resolve()
+    try:
+        candidate = root.joinpath(*path.parts).resolve(strict=True)
+        candidate.relative_to(root_resolved)
+    except (FileNotFoundError, OSError, ValueError):
+        return False
+    if not candidate.is_file():
+        return False
+    normalized_hash = str(expected).removeprefix("sha256:")
+    return _sha256_file(candidate) == normalized_hash
+
+
+def _catalog_path_is_safe(value: str) -> bool:
+    posix = value.replace("\\", "/")
+    path = PurePosixPath(posix)
+    return not (
+        path.is_absolute()
+        or ".." in path.parts
+        or re.match(r"^[A-Za-z]:/", posix)
+        or posix.startswith(("~/", "/home/", "/Users/", "/root/"))
+    )
 
 
 def verify_required_paths(v: Verification) -> None:
@@ -123,18 +186,18 @@ def verify_registry(v: Verification, registry: dict[str, Any]) -> None:
             provenance = pack.get("provenance")
             checksum = provenance.get("checksum") if isinstance(provenance, dict) else None
             v.require(
-                isinstance(checksum, str)
-                and bool(re.fullmatch(r"(?:sha256:)?[0-9a-f]{64}", checksum)),
+                _valid_sha256(checksum),
                 f"{prefix}: improve=done requires a SHA-256 provenance checksum",
             )
             receipts = pack.get("improve_receipts")
             v.require(
                 isinstance(receipts, dict)
                 and all(
-                    isinstance(receipts.get(key), str) and bool(receipts.get(key))
+                    _receipt_is_inspectable(receipts.get(key))
                     for key in ("eval", "safety", "observability")
                 ),
-                f"{prefix}: improve=done requires eval, safety, and observability receipts",
+                f"{prefix}: improve=done requires inspectable eval, safety, and "
+                "observability receipts with evidence hashes",
             )
         if registered:
             v.require(
@@ -171,18 +234,13 @@ def verify_catalog(v: Verification) -> int:
             value = skill.get(field)
             if not isinstance(value, str) or not value:
                 continue
-            posix = value.replace("\\", "/")
-            if (
-                PurePosixPath(posix).is_absolute()
-                or re.match(r"^[A-Za-z]:/", posix)
-                or posix.startswith(("~/", "/home/", "/Users/", "/root/"))
-            ):
+            if not _catalog_path_is_safe(value):
                 unsafe_paths.append(f"{skill_id}:{field}={value}")
 
     duplicates = sorted({skill_id for skill_id in ids if ids.count(skill_id) > 1})
     v.require(not duplicates, f"duplicate catalog ids: {duplicates[:20]}")
-    v.require(not unsafe_paths, f"catalog leaks host-absolute paths: {unsafe_paths[:20]}")
-    v.receipt(f"catalog skills: {len(catalog)}; unique ids: {len(set(ids))}; host paths: 0")
+    v.require(not unsafe_paths, f"catalog contains unsafe paths: {unsafe_paths[:20]}")
+    v.receipt(f"catalog skills: {len(catalog)}; unique ids: {len(set(ids))}; unsafe paths: 0")
     return len(catalog)
 
 
@@ -215,6 +273,10 @@ def verify_security_scan(v: Verification, catalog_count: int) -> None:
         if result.returncode != 0 or not output.exists():
             return
         live = json.loads(output.read_text(encoding="utf-8"))
+        v.require(
+            committed == live,
+            "committed security scan report is stale; regenerate it from the scanner",
+        )
         v.require(live.get("scanned") == catalog_count, "live security scan count drifted")
         v.require(
             live.get("severity_counts", {}).get("high") == 0,
@@ -229,6 +291,20 @@ def verify_security_scan(v: Verification, catalog_count: int) -> None:
 
 
 def verify_mcp_contract(v: Verification, registry: dict[str, Any]) -> None:
+    schema_check = subprocess.run(
+        [sys.executable, str(ROOT / "scripts/validate_server_json.py")],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+    )
+    v.require(
+        schema_check.returncode == 0,
+        "server.json fails the vendored official MCP schema: "
+        f"{(schema_check.stdout + schema_check.stderr).strip()}",
+    )
+    if schema_check.returncode == 0:
+        v.receipt("server.json: official MCP schema valid")
+
     server_json = _load_json("mcp-server/server.json")
     pyproject = tomllib.loads((ROOT / "mcp-server/pyproject.toml").read_text(encoding="utf-8"))
     project = pyproject.get("project", {})

@@ -82,19 +82,24 @@ The command center now verifies its own claims before it can merge:
 
 ```bash
 python scripts/verify_repo.py
+python scripts/validate_server_json.py
 python mcp-server/test_server.py
 python index/test_scan_skill_frontmatter.py
+python scripts/test_verify_repo_contract.py
+python -m compileall -q index mcp-server scripts
 python scripts/sync_mcp_assets.py --check
 python -m build --wheel --sdist mcp-server
 python scripts/test_built_distribution.py
 ```
 
 The repository gate checks lifecycle schema, README generation, catalog identity and path hygiene,
-security findings, exact allowlist exceptions, MCP version/provenance alignment, and byte-for-byte
-package asset synchronization. A clean-install smoke test proves that the built wheel can search
-its bundled catalog without source-tree environment variables. A security exception binds one
-skill id, scanner rule, and evidence hash; changed evidence invalidates it. External publication
-remains separate from verification and is not automated by this repository.
+security findings, exact allowlist exceptions, MCP version/provenance alignment, the vendored
+official MCP registry schema, and byte-for-byte package asset synchronization. A clean-install
+smoke test proves that the built wheel can search its bundled catalog without source-tree
+environment variables. A security exception binds one skill id, scanner rule, and evidence hash;
+changed evidence invalidates it. Completion receipts likewise point to repository-contained files
+whose SHA-256 is recomputed by the gate. External publication remains separate from verification
+and is not automated by this repository.
 
 ---
 

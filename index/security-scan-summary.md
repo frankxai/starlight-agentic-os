@@ -4,16 +4,17 @@
 **Threat class:** semantic supply-chain — a skill's router-visible `name`/`description` is read
 *before* its body, so a malicious one can try to hijack routing or inject instructions.
 
-## Result: 418 scanned · 3 flagged (1 high · 2 medium · 0 low) · **0 genuine attacks**
+## Gated result: 418 scanned · 2 flagged (0 high · 2 medium · 0 low) · 1 exact exception
 
-All three flags were manually triaged and cleared as benign / false-positive. The scanner is
-working correctly (it caught the exact lexical patterns it should); none of Frank's real skills
-carry an actual router-hijack, injection, exfiltration, or homoglyph attack.
+The raw scan finds three lexical patterns. One HIGH tmux collision is content-addressed in the
+allowlist and appears under `allowlisted` in the committed report; the two unallowlisted MEDIUM
+findings remain visible. All three were manually triaged as benign / false-positive. None carries
+an actual router-hijack, injection, exfiltration, or homoglyph attack.
 
-**Gate state, 2026-07-25:** the one HIGH finding is now bound to its exact skill id, rule, and
-evidence SHA-256 in `security-allowlist.json`. The two MEDIUM findings remain visible and
-unallowlisted. Required CI fails on any other HIGH, changed evidence, stale exception, or duplicate
-exception.
+**Gate state, 2026-07-25:** the one raw HIGH finding is bound to its exact skill id, rule, and
+evidence SHA-256 in `security-allowlist.json`. Required CI regenerates the full gated report and
+requires structural equality with the committed JSON; it fails on report drift, any other HIGH,
+changed evidence, stale exception, or duplicate exception.
 
 | Sev | Skill | Rule | Evidence | Triage |
 |---|---|---|---|---|
