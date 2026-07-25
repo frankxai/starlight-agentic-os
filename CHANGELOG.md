@@ -2,6 +2,21 @@
 
 All notable changes to the Starlight Agentic OS command center. Semver.
 
+## [Unreleased]
+
+### Added
+- Content-addressed skill-frontmatter security exceptions with stale-report,
+  duplicate, malformed-root, and changed-evidence rejection.
+- Self-contained `starlight-skill-index` wheel and sdist assets plus a clean
+  install smoke test that runs without source paths or environment overrides.
+- Certification v2 evidence classes for eval, safety, and observability.
+
+### Changed
+- Certified `starlight-skill-index` 0.1.1 at source commit
+  `a9d4738960cf0d784a959ce1f7739a3deb88a989` with pinned build tooling,
+  catalog path containment, exact live-vs-committed scan equality, and clean
+  distribution gates. Index promotion and external publication remain separate.
+
 ## [0.7.0] — 2026-07-25
 
 ### Added

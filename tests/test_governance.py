@@ -9,8 +9,12 @@ import unittest
 from pathlib import Path
 
 from scripts.pack_digest import digest_directory
-from scripts.validate_repo import lifecycle_failures, mcp_schema_failures
-from scripts.verify_certifications import repo_path
+from scripts.validate_repo import (
+    catalog_failures,
+    lifecycle_failures,
+    mcp_schema_failures,
+)
+from scripts.verify_certifications import evidence_failures, repo_path
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -56,6 +60,27 @@ class GovernanceTests(unittest.TestCase):
     def test_certification_paths_reject_traversal(self) -> None:
         with self.assertRaisesRegex(ValueError, "clean repository-relative"):
             repo_path("../outside", "test artifact", "directory")
+
+    def test_catalog_paths_reject_traversal_and_host_paths(self) -> None:
+        failures = catalog_failures(
+            [
+                {"id": "safe", "path": "skills/safe/SKILL.md"},
+                {"id": "traversal", "path": "../../outside/SKILL.md"},
+                {"id": "host", "body_path": "/home/operator/private.md"},
+            ]
+        )
+        self.assertEqual(len(failures), 2)
+        self.assertTrue(any("traversal:path" in failure for failure in failures))
+        self.assertTrue(any("host:body_path" in failure for failure in failures))
+
+    def test_v2_certification_requires_three_evidence_classes(self) -> None:
+        failures = evidence_failures(
+            {"evidence": {"eval": {}, "safety": {}}},
+            "0" * 40,
+        )
+        self.assertTrue(any("evidence.eval.sha256" in failure for failure in failures))
+        self.assertTrue(any("evidence.safety.sha256" in failure for failure in failures))
+        self.assertTrue(any("evidence.observability" in failure for failure in failures))
 
     def test_syndication_mutation_fails_closed(self) -> None:
         result = subprocess.run(

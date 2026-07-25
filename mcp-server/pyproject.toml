@@ -1,10 +1,10 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling==1.31.0"]
 build-backend = "hatchling.build"
 
 [project]
 name = "starlight-skill-index"
-version = "0.1.0"
+version = "0.1.1"
 description = "MCP server that turns a large SKILL.md library into a semantic, token-cheap router — search_skills / get_skill / list_packs / security_report."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -45,12 +45,35 @@ Issues = "https://github.com/frankxai/starlight-agentic-os/issues"
 [project.scripts]
 starlight-skill-index = "server:main"
 
-# Ship server.py as a single top-level module (no src/ package layout).
+# Ship a self-contained metadata router. Skill bodies remain outside the wheel
+# and are readable only through an explicit STARLIGHT_SKILLS_ROOT trust root.
 [tool.hatch.build.targets.wheel]
-include = ["server.py"]
+include = [
+    "server.py",
+    "catalog.json",
+    "scan_skill_frontmatter.py",
+    "security-allowlist.json",
+]
+
+[tool.hatch.build.targets.wheel.force-include]
+"catalog.json" = "catalog.json"
+"security-allowlist.json" = "security-allowlist.json"
 
 [tool.hatch.build.targets.sdist]
-include = ["server.py", "server.json", "README.md", "requirements.txt", "test_server.py"]
+include = [
+    "server.py",
+    "server.json",
+    "README.md",
+    "requirements.txt",
+    "test_server.py",
+    "catalog.json",
+    "scan_skill_frontmatter.py",
+    "security-allowlist.json",
+]
+
+[tool.hatch.build.targets.sdist.force-include]
+"catalog.json" = "catalog.json"
+"security-allowlist.json" = "security-allowlist.json"
 
 [tool.pytest.ini_options]
 addopts = "-q"

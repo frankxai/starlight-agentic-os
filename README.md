@@ -84,7 +84,7 @@ OpenLLMetry OTel (authored).
 | `agentic-creator-os` | original | 12.0.0 | ✅ | 🟡 | ⬜ | ⬜ none |
 | `arcanea` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `starlight-intelligence-system` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
-| `starlight-skill-index` | original | 0.1.0 | ✅ | ✅ | ⬜ | ⬜ none |
+| `starlight-skill-index` | original | 0.1.1 | ✅ | ✅ | ⬜ | ⬜ none |
 | `hermes` | original | 0.1.0 | ✅ | 🟡 | ⬜ | ⬜ none |
 | `starlight-gravity-engine` | original | 0.1.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `app-studio-team` | original | 0.1.0 | ✅ | ⬜ | ⬜ | ⬜ none |

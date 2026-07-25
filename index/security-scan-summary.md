@@ -4,29 +4,27 @@
 **Threat class:** semantic supply-chain — a skill's router-visible `name`/`description` is read
 *before* its body, so a malicious one can try to hijack routing or inject instructions.
 
-## Result: 418 scanned · 3 flagged (1 high · 2 medium · 0 low) · **0 genuine attacks**
+## Result: 418 scanned · 2 active flags (0 high · 2 medium · 0 low) · 1 exact exception
 
-All three flags were manually triaged and cleared as benign / false-positive. The scanner is
-working correctly (it caught the exact lexical patterns it should); none of Frank's real skills
-carry an actual router-hijack, injection, exfiltration, or homoglyph attack.
+All three lexical matches were reviewed. The single high-severity false positive is removed
+from the blocking set only through a content-addressed exception bound to the exact skill id,
+rule, and evidence digest. The two medium findings remain visible in the committed report.
 
 | Sev | Skill | Rule | Evidence | Triage |
 |---|---|---|---|---|
-| 🔴 HIGH | `superpowers:using-tmux-for-interactive-commands` | `exfiltration_intent` | "…sessions and **send**-**keys**" | **FALSE POSITIVE.** Matched `send…keys` — but "send-keys" is the literal **tmux subcommand name**, not data exfiltration. Vendored superpowers-lab skill. |
+| 🔴 HIGH · exact exception | `superpowers:using-tmux-for-interactive-commands` | `exfiltration_intent` | "…sessions and **send**-**keys**" | **FALSE POSITIVE.** The exception is bound to evidence SHA-256 `5a30d9f8…d291`; any wording change makes it stale and fails the gate. |
 | 🟡 MED | `agentic-creator-os:higgsfield-operator` | `embedded_url` | `https://mcp.higgsfield.ai/mcp` | **BENIGN.** A legitimate MCP connector URL — expected in an operator skill that wires that service. |
 | 🟡 MED | `starlight-intelligence-system:safety/secret-detector` | `secret_solicitation` | "…credentials, API keys, tokens…" | **FALSE POSITIVE BY DESIGN.** This skill's *job* is detecting secrets, so its description lists what it looks for. |
 
 ## Interpretation
 
-- The one HIGH is a **lexical collision** (`send-keys`), not intent — the kind of thing a human
-  reviewer clears in seconds but a regex can't. Keep it on the allow-list rather than suppressing
-  the rule (the rule is valuable).
+- The one HIGH is a **lexical collision** (`send-keys`), not intent. The exact exception preserves
+  the valuable rule while refusing to transfer trust to changed evidence.
 - The two MEDIUMs are the expected shape of legitimate skills: one names a real MCP endpoint, one
   is a security tool describing its own domain.
 
-## CI recommendation
+## CI enforcement
 
-Run `scan_skill_frontmatter.py --fail-on high` as the pre-index gate, **plus a tiny allow-list**
-for these three known-benign findings (by skill id + rule), so a *new* HIGH finding fails the
-build while these three don't cause chronic red. Re-triage on every catalog regen — a new HIGH on
-a skill NOT on the allow-list is the real signal.
+CI reruns the scanner with `--fail-on high`, validates the exact exception file, and requires the
+live JSON report to equal this committed artifact. A new HIGH, changed evidence, stale exception,
+or hand-edited report fails the repository gate.

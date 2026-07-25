@@ -12,7 +12,7 @@ in [`REGISTER-EVERYWHERE.md`](REGISTER-EVERYWHERE.md).*
 >   `repository.url` points at the real repo
 >   (`https://github.com/frankxai/starlight-agentic-os`, subfolder `mcp-server`) ✅.
 > - The runnable artifact is reachable by the registry's declared install path (see step 0 —
->   the `server.json` currently declares a **pypi** package `starlight-skill-index@0.1.0`, which
+>   the `server.json` currently declares a **pypi** package `starlight-skill-index@0.1.1`, which
 >   must exist on PyPI *or* be switched to a github-source package before publish).
 
 ---

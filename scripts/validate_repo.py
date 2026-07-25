@@ -8,8 +8,9 @@ import json
 import re
 import subprocess
 import sys
+import tempfile
 import tomllib
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 import yaml
 from jsonschema import Draft7Validator, FormatChecker
@@ -20,6 +21,7 @@ MCP_SCHEMA_SHA256 = "6fcf2f679ccf47ee5d6f578a8e87c2980b929c696cbc878a48cde7cc9b5
 REQUIRED = [
     ".agent-harness.json",
     "AGENTS.md",
+    "CLAUDE.md",
     "SYSTEM.md",
     "SCHEMA.md",
     "SKILLS.md",
@@ -32,8 +34,16 @@ REQUIRED = [
     "mcp-server/pyproject.toml",
     "mcp-server/README.md",
     "requirements-dev.txt",
+    "index/security-allowlist.json",
+    "index/security-scan-report.json",
+    "index/test_scan_skill_frontmatter.py",
+    "mcp-server/catalog.json",
+    "mcp-server/scan_skill_frontmatter.py",
+    "mcp-server/security-allowlist.json",
     "schemas/README.md",
     "schemas/mcp-server-2025-12-11.schema.json",
+    "scripts/sync_mcp_assets.py",
+    "scripts/test_built_distribution.py",
     "scripts/verify_certifications.py",
 ]
 INSTALL = {"todo", "partial", "done"}
@@ -97,6 +107,80 @@ def mcp_schema_failures(manifest: dict) -> list[str]:
     return failures
 
 
+def catalog_failures(catalog: object) -> list[str]:
+    """Reject ambiguous ids and paths that can escape an explicit skill root."""
+    if not isinstance(catalog, list):
+        return ["index/catalog.json must contain an array"]
+    failures: list[str] = []
+    seen: set[str] = set()
+    for index, skill in enumerate(catalog):
+        if not isinstance(skill, dict):
+            failures.append(f"catalog[{index}] must be an object")
+            continue
+        skill_id = str(skill.get("id") or "")
+        if not skill_id or skill_id in seen:
+            failures.append(f"catalog id missing or duplicated: {skill_id!r}")
+        seen.add(skill_id)
+        for field in ("path", "body_path"):
+            value = skill.get(field)
+            if not isinstance(value, str) or not value:
+                continue
+            posix = value.replace("\\", "/")
+            path = PurePosixPath(posix)
+            if (
+                path.is_absolute()
+                or ".." in path.parts
+                or re.match(r"^[A-Za-z]:/", posix)
+                or posix.startswith(("~/", "/home/", "/Users/", "/root/"))
+            ):
+                failures.append(f"{skill_id}:{field} is not repository-relative")
+    return failures
+
+
+def security_scan_failures() -> list[str]:
+    """Require the committed report to equal a fresh fail-closed scan."""
+    committed_path = ROOT / "index/security-scan-report.json"
+    try:
+        committed = json.loads(committed_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"invalid committed security scan report: {exc}"]
+
+    with tempfile.TemporaryDirectory(prefix="starlight-scan-") as directory:
+        live_path = Path(directory) / "report.json"
+        result = subprocess.run(
+            [
+                sys.executable,
+                "index/scan_skill_frontmatter.py",
+                "--catalog",
+                "index/catalog.json",
+                "--allowlist",
+                "index/security-allowlist.json",
+                "--json",
+                str(live_path),
+                "--fail-on",
+                "high",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            return [
+                "live skill-frontmatter security scan failed: "
+                + (result.stderr.strip() or result.stdout.strip())
+            ]
+        try:
+            live = json.loads(live_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            return [f"live security scan did not produce valid JSON: {exc}"]
+    if committed != live:
+        return [
+            "committed security scan report is stale; regenerate it from the scanner"
+        ]
+    return []
+
+
 def main() -> int:
     failures: list[str] = []
     for path in REQUIRED:
@@ -131,9 +215,22 @@ def main() -> int:
         if status.get("registered") and not provenance.get("last_reviewed"):
             failures.append(f"{name}: registered entries require last_reviewed")
 
+    try:
+        catalog = json.loads(read("index/catalog.json"))
+    except (OSError, json.JSONDecodeError) as exc:
+        failures.append(f"invalid index/catalog.json: {exc}")
+        catalog = []
+    failures.extend(catalog_failures(catalog))
+    failures.extend(security_scan_failures())
+
     server = json.loads(read("mcp-server/server.json"))
     failures.extend(mcp_schema_failures(server))
-    project = tomllib.loads(read("mcp-server/pyproject.toml"))["project"]
+    package_config = tomllib.loads(read("mcp-server/pyproject.toml"))
+    project = package_config["project"]
+    if package_config.get("build-system", {}).get("requires") != [
+        "hatchling==1.31.0"
+    ]:
+        failures.append("MCP build backend must pin hatchling==1.31.0 exactly")
     skill_pack = next((pack for pack in packs if pack.get("name") == "starlight-skill-index"), None)
     expected_schema = (
         "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json"
@@ -165,10 +262,16 @@ def main() -> int:
         if transport.get("type") not in {"stdio", "sse", "streamable-http"}:
             failures.append(f"MCP package[{index}] has an invalid transport")
     if skill_pack:
+        source_match = re.search(
+            r'^SERVER_VERSION = "([^"]+)"$',
+            read("mcp-server/server.py"),
+            flags=re.MULTILINE,
+        )
         versions = {
             str(server.get("version")),
             str(project.get("version")),
             str(skill_pack.get("version")),
+            str(source_match.group(1) if source_match else ""),
         }
         if len(versions) != 1:
             failures.append(f"router version drift: {sorted(versions)}")
@@ -188,6 +291,16 @@ def main() -> int:
         failures.append("workflow ignores a command failure with `|| true`")
     if re.search(r'echo\s+["\']?TODO', workflows):
         failures.append("workflow can report success by echoing a TODO")
+
+    synced = subprocess.run(
+        [sys.executable, "scripts/sync_mcp_assets.py", "--check"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if synced.returncode != 0:
+        failures.append("MCP package assets are missing or stale")
 
     generated = subprocess.run(
         [sys.executable, "scripts/gen_readme.py", "--check"],

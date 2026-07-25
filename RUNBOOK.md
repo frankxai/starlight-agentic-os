@@ -5,10 +5,14 @@
 ```bash
 python3 scripts/validate_repo.py
 python3 mcp-server/test_server.py
+python3 index/test_scan_skill_frontmatter.py
 python3 -m unittest discover -s tests -p 'test_*.py'
 bash portable/verify-portability.sh portable/packs/acos-meta
 python3 scripts/verify_certifications.py --all
 python3 scripts/gen_readme.py --check
+python3 scripts/sync_mcp_assets.py --check
+python3 -m build --wheel --sdist mcp-server
+python3 scripts/test_built_distribution.py
 python3 -m compileall -q index mcp-server portable scripts
 ```
 

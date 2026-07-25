@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -21,6 +22,7 @@ except ImportError:  # direct script execution
 ROOT = Path(__file__).resolve().parent.parent
 REGISTRY = ROOT / "registry.yaml"
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+EVIDENCE_SHA_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
 def git(*args: str) -> subprocess.CompletedProcess[str]:
@@ -58,6 +60,51 @@ def repo_path(value: object, label: str, expected: str) -> tuple[Path, str]:
     if expected == "directory" and not resolved.is_dir():
         raise ValueError(f"{label} is not a directory")
     return resolved, raw.as_posix()
+
+
+def evidence_failures(receipt: dict, source_commit: str) -> list[str]:
+    """Validate v2 eval, safety, and observability evidence by exact bytes."""
+    evidence = receipt.get("evidence")
+    if not isinstance(evidence, dict):
+        return ["receipt v2 requires an evidence object"]
+
+    failures: list[str] = []
+    for evidence_class in ("eval", "safety", "observability"):
+        item = evidence.get(evidence_class)
+        if not isinstance(item, dict):
+            failures.append(f"receipt evidence.{evidence_class} must be an object")
+            continue
+        declared = str(item.get("sha256") or "")
+        if not EVIDENCE_SHA_RE.fullmatch(declared):
+            failures.append(
+                f"receipt evidence.{evidence_class}.sha256 is not a SHA-256 digest"
+            )
+            continue
+        try:
+            evidence_file, relative = repo_path(
+                item.get("path"),
+                f"receipt evidence.{evidence_class}",
+                "file",
+            )
+        except ValueError as exc:
+            failures.append(str(exc))
+            continue
+        actual = hashlib.sha256(evidence_file.read_bytes()).hexdigest()
+        if actual != declared:
+            failures.append(
+                f"receipt evidence.{evidence_class} does not match its SHA-256"
+            )
+        tracked = git("ls-tree", "--name-only", "HEAD", "--", relative)
+        if tracked.returncode != 0 or tracked.stdout.strip() != relative:
+            failures.append(f"receipt evidence.{evidence_class} is not committed")
+        if (
+            SHA_RE.fullmatch(source_commit)
+            and git("cat-file", "-e", f"{source_commit}:{relative}").returncode == 0
+        ):
+            failures.append(
+                f"receipt evidence.{evidence_class} already existed at source_commit"
+            )
+    return failures
 
 
 def verify_pack(pack: dict) -> list[str]:
@@ -99,7 +146,11 @@ def verify_pack(pack: dict) -> list[str]:
         failures.append(f"{name}: receipt missing {', '.join(missing)}")
         return failures
 
-    if receipt["schema_version"] != "starlight.pack_certification.v1":
+    schema_version = receipt["schema_version"]
+    if schema_version not in {
+        "starlight.pack_certification.v1",
+        "starlight.pack_certification.v2",
+    }:
         failures.append(f"{name}: unsupported certification schema")
     if receipt["pack"] != name or receipt["version"] != str(pack["version"]):
         failures.append(f"{name}: receipt pack/version does not match registry")
@@ -134,6 +185,11 @@ def verify_pack(pack: dict) -> list[str]:
         tracked = git("ls-tree", "--name-only", "HEAD", "--", receipt_relative)
         if tracked.returncode != 0 or tracked.stdout.strip() != receipt_relative:
             failures.append(f"{name}: receipt is not committed at HEAD")
+
+    if schema_version == "starlight.pack_certification.v2":
+        failures.extend(f"{name}: {failure}" for failure in evidence_failures(
+            receipt, source_commit
+        ))
 
     try:
         artifact_root, artifact_relative = repo_path(

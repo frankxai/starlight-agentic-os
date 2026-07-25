@@ -3,7 +3,7 @@
   "name": "io.github.frankxai/starlight-skill-index",
   "title": "Starlight Skill Index",
   "description": "Governed skill routing with catalog search, body lookup, pack inventory, and security reports.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "repository": {
     "url": "https://github.com/frankxai/starlight-agentic-os",
     "source": "github",
@@ -14,7 +14,7 @@
       "registryType": "pypi",
       "registryBaseUrl": "https://pypi.org",
       "identifier": "starlight-skill-index",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimeHint": "uvx",
       "transport": {
         "type": "stdio"
@@ -41,6 +41,12 @@
         {
           "name": "STARLIGHT_SCAN_REPORT",
           "description": "Path to a cached scan_report.json from scan_skill_frontmatter.py. If unset, security_report runs the scan live over the catalog.",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "STARLIGHT_SECURITY_ALLOWLIST",
+          "description": "Optional path to exact content-addressed scanner exceptions. If unset, the allowlist beside the active catalog is used.",
           "isRequired": false,
           "isSecret": false
         },

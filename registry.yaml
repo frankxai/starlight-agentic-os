@@ -86,15 +86,15 @@ packs:
   # -------------------------------------------------------------------------
   - name: starlight-skill-index
     repo: frankxai/starlight-agentic-os
-    version: 0.1.0
+    version: 0.1.1
     license: MIT
     source_url: https://github.com/frankxai/starlight-agentic-os/tree/main/mcp-server
     origin: original
     summary: "MCP server (FastMCP) making the 418-skill index routable: search_skills/get_skill/list_packs/security_report, vector->catalog graceful fallback. The queryable skill router itself."
     status: { install: done, improve: done, indexed: todo, registered: [] }
-    improve_note: "Independently certified at source commit bbd3b5a6faf752187987a6392b5c5a91c9ddc826: 10/10 MCP tests, 7/7 governance tests, 4/4 portability checks, pinned full-schema validation, and exact-byte artifact verification."
+    improve_note: "0.1.1 independently certified at source commit a9d4738960cf0d784a959ce1f7739a3deb88a989: repository, router, scanner, governance, portability, asset-sync, build, and 9/9 clean-install distribution checks passed."
     registered_note: "Not published. PyPI artifact and official MCP Registry record require separate external proof and named-human approval."
-    provenance: { checksum: "sha256:04740a7cd5e64f491519a8bbcc840302225b8dfb80b08ab97a69749b33aef269", certification: certifications/starlight-skill-index/0.1.0.json, added: 2026-07-24, last_reviewed: 2026-07-25 }
+    provenance: { checksum: "sha256:85762f14071910dc92736034966b2b934f1bff10a00b6d3b79da338f346e07d1", certification: "certifications/starlight-skill-index/0.1.1.json", added: 2026-07-24, last_reviewed: 2026-07-25 }
 
   # -------------------------------------------------------------------------
   # EXECUTORS / GUILDS — runtimes, each guild owns its own runtime
