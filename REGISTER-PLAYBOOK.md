@@ -6,7 +6,9 @@ network, and the `frankxai` GitHub login. This is the operator checklist; the re
 in [`REGISTER-EVERYWHERE.md`](REGISTER-EVERYWHERE.md).*
 
 > **Preconditions (verify before firing):**
-> - Pack `improve == done` (starlight-skill-index: 8/8 smoke tests pass ✅).
+> - Pack `improve == done` (**not yet satisfied**; package tests pass, but eval, provenance
+>   checksum, and live-observability receipts remain incomplete).
+> - Pack `indexed == done` (**not yet satisfied**; record a production discovery receipt first).
 > - `mcp-server/server.json` validates ✅ and `repository.url` points at the real repo
 >   (`https://github.com/frankxai/starlight-agentic-os`, subfolder `mcp-server`) ✅.
 > - The runnable artifact is reachable by the registry's declared install path (see step 0 —
@@ -66,8 +68,8 @@ Most sync from the official registry; where a manual submit is needed:
 | **punkpeye/awesome-mcp-servers** | Open a PR adding the row (link the official-registry record). |
 
 Automated form (once wired): `python scripts/syndicate.py starlight-skill-index` — it must (a) refuse
-unless `improve == done`, (b) publish to each target not already in `status.registered`, (c) write the
-registry ids back into `registry.yaml`, (d) regenerate the README matrix, (e) append to
+unless `improve == done` and `indexed == done`, (b) publish to each target not already in
+`status.registered`, (c) write the registry ids back into `registry.yaml`, (d) regenerate the README matrix, (e) append to
 `syndication-log.jsonl`. Contract in [`REGISTER-EVERYWHERE.md`](REGISTER-EVERYWHERE.md).
 
 ## Step 4 — Claude Code marketplace
@@ -107,8 +109,7 @@ automatically once wired.
 ```jsonc
 // Claude Code / Codex / Gemini MCP config (see mcp-server/README.md for per-CLI snippets)
 { "mcpServers": { "starlight-skill-index": {
-    "command": "uvx", "args": ["starlight-skill-index"],
-    "env": { "STARLIGHT_CATALOG": "/abs/path/to/index/catalog.json" } } } }
+    "command": "uvx", "args": ["starlight-skill-index"] } } }
 ```
 Then in-agent: call `search_skills("review a github pull request")` → expect a ranked list
 (top hit today, catalog-fallback mode, is `arcanea:github-code-review`). Set `STARLIGHT_DB_URL`
@@ -116,5 +117,6 @@ to flip to the stronger vector path once the pgvector index is built.
 
 ---
 
-*Nothing in this playbook has been executed. It is the ready-to-fire package; run it when Frank is
-on a networked machine with `mcp-publisher` installed and the `frankxai` GitHub login available.*
+*Nothing in this playbook has been executed. Run it only after both `improve: done` and
+`indexed: done` receipts exist and Frank is on a networked machine with `mcp-publisher` installed
+and the `frankxai` GitHub login available.*

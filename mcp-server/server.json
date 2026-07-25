@@ -45,6 +45,12 @@
           "isSecret": false
         },
         {
+          "name": "STARLIGHT_SECURITY_ALLOWLIST",
+          "description": "Path to exact content-addressed scan exceptions. If unset, the server uses security-allowlist.json beside the active catalog.",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
           "name": "STARLIGHT_SKILLS_ROOT",
           "description": "Base directory used to resolve a skill's relative path to its on-disk body when body_path is absent.",
           "isRequired": false,

@@ -38,13 +38,15 @@ Every pack in the registry is tracked through four states. A pack is not "done" 
 1. **Install** — the pack is *present and working* in at least one CLI.
 2. **Improve** — the pack is *hardened to the quality bar*: promptfoo evals in CI, safety
    rails, and provenance (source · license · checksum) recorded.
-3. **Indexed** — the pack is *discoverable to our own agents* via the semantic skill index
-   (two-stage retriever → reranker over full skill bodies).
+3. **Indexed** — after improvement is complete, the pack is *production-discoverable to our own
+   agents* through the governed skill index. `index/catalog.json` is the staging inventory;
+   catalog presence alone is not an indexed release receipt.
 4. **Registered** — the pack is *published to the operator registries* (official MCP Registry,
    Glama / Smithery / mcp.so / PulseMCP, our own Claude Code marketplace, and awesome-lists).
 
-The [`registry.yaml`](registry.yaml) is the SSOT. CI (`refresh-status.yml`) writes the
-`registered:` field back after each successful publish.
+The [`registry.yaml`](registry.yaml) is the SSOT. A future independently reviewed publication
+workflow must write `registered:` back only after each external registry confirms publication.
+Today that boundary is deliberately manual and every pack remains unregistered.
 
 ---
 
@@ -68,26 +70,49 @@ to flip to the pgvector semantic path once built. Per-CLI config snippets in
 **Portable packs** — [`portable/`](portable/) symlinks one pack across `~/.claude/skills`,
 `~/.agents/skills`, and `~/.gemini/skills` with `AGENTS.md` aliasing and per-CLI MCP config, so a
 pack is authored once and runs everywhere (the tripod, made real). The `acos-meta` exemplar is
-portable-clean. **Observability** — [`observability/`](observability/) self-hosts Langfuse +
-OpenLLMetry OTel (authored).
+portable-clean. **Observability** — [`observability/`](observability/) routes OpenLLMetry/OTel
+to Arize Phoenix by default, with Langfuse retained as an optional team-scale sink. The
+instrumentation contract is authored; a live trace receipt is still required.
+
+---
+
+## Release integrity
+
+The command center now verifies its own claims before it can merge:
+
+```bash
+python scripts/verify_repo.py
+python mcp-server/test_server.py
+python index/test_scan_skill_frontmatter.py
+python scripts/sync_mcp_assets.py --check
+python -m build --wheel --sdist mcp-server
+python scripts/test_built_distribution.py
+```
+
+The repository gate checks lifecycle schema, README generation, catalog identity and path hygiene,
+security findings, exact allowlist exceptions, MCP version/provenance alignment, and byte-for-byte
+package asset synchronization. A clean-install smoke test proves that the built wheel can search
+its bundled catalog without source-tree environment variables. A security exception binds one
+skill id, scanner rule, and evidence hash; changed evidence invalidates it. External publication
+remains separate from verification and is not automated by this repository.
 
 ---
 
 ## Status matrix
 
 <!-- STATUS-MATRIX:START -->
-![packs](https://img.shields.io/badge/packs-28-blue) ![install](https://img.shields.io/badge/install-25%2F28-brightgreen) ![improve](https://img.shields.io/badge/improve-1%2F28-green) ![indexed](https://img.shields.io/badge/indexed-5%2F28-green) ![registered](https://img.shields.io/badge/registered-0%2F28-orange) ![deprecate](https://img.shields.io/badge/deprecate-10-yellow)
+![packs](https://img.shields.io/badge/packs-28-blue) ![install](https://img.shields.io/badge/install-25%2F28-brightgreen) ![improve](https://img.shields.io/badge/improve-0%2F28-orange) ![indexed](https://img.shields.io/badge/indexed-0%2F28-orange) ![registered](https://img.shields.io/badge/registered-0%2F28-orange) ![deprecate](https://img.shields.io/badge/deprecate-10-yellow)
 
 | Pack | Origin | Ver | Install | Improve | Indexed | Registered |
 |---|---|---|:--:|:--:|:--:|---|
-| `frankx` | original | 0.0.0 | ✅ | ⬜ | ✅ | ⬜ none |
-| `agentic-creator-os` | original | 12.0.0 | ✅ | 🟡 | ✅ | ⬜ none |
-| `arcanea` | original | 0.0.0 | ✅ | ⬜ | ✅ | ⬜ none |
-| `starlight-intelligence-system` | original | 0.0.0 | ✅ | ⬜ | ✅ | ⬜ none |
-| `starlight-skill-index` | original | 0.1.0 | ✅ | ✅ | ⬜ | ⬜ none |
+| `frankx` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
+| `agentic-creator-os` | original | 12.0.0 | ✅ | 🟡 | ⬜ | ⬜ none |
+| `arcanea` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
+| `starlight-intelligence-system` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
+| `starlight-skill-index` | original | 0.1.0 | ✅ | 🟡 | ⬜ | ⬜ none |
 | `hermes` | original | 0.1.0 | ✅ | 🟡 | ⬜ | ⬜ none |
 | `starlight-gravity-engine` | original | 0.1.0 | ✅ | ⬜ | ⬜ | ⬜ none |
-| `app-studio-team` | original | 0.1.0 | ✅ | ⬜ | ✅ | ⬜ none |
+| `app-studio-team` | original | 0.1.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `gencreator-content-team` | original | 0.0.0 | 🟡 | ⬜ | ⬜ | ⬜ none |
 | `marine-agent-skills` | original | 0.1.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `prompt-engine` | original | 0.0.0 | 🟡 | ⬜ | ⬜ | ⬜ none |
@@ -97,7 +122,7 @@ OpenLLMetry OTel (authored).
 | `sentinel` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `global-claude-core` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `v-swarm` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
-| `superpowers` | absorbed | 0.0.0 | ✅ | ⬜ | 🟡 | ⬜ none |
+| `superpowers` | absorbed | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `claude-flow` | absorbed | 3.5.80 | ✅ | ⚠️ dep | ⬜ | ⬜ none |
 | `swarm-orchestration-skill` | absorbed | 0.0.0 | ✅ | ⚠️ dep | ⬜ | ⬜ none |
 | `swarm-advanced-skill` | absorbed | 0.0.0 | ✅ | ⚠️ dep | ⬜ | ⬜ none |
@@ -133,13 +158,13 @@ python scripts/gen_readme.py --check  # CI gate: fail if the matrix is stale
 | [`index/`](index/) | Semantic skill index — `catalog.json` (418 skills, real), security scan (real), pgvector build + search (authored). |
 | [`mcp-server/`](mcp-server/) | **`starlight-skill-index`** MCP server — the queryable skill router (search/get/list/security). 8/8 smoke tests pass. |
 | [`portable/`](portable/) | Portable-pack installer — one pack across Claude/Codex/Gemini via symlinks + `AGENTS.md` aliasing. `acos-meta` exemplar. |
-| [`observability/`](observability/) | Self-host Langfuse compose + OpenLLMetry OTel env (authored, not run). |
+| [`observability/`](observability/) | Arize Phoenix default + OpenLLMetry/OTel; optional Langfuse heavy tier (instrumentation authored, live trace unproved). |
 | [`REGISTER-EVERYWHERE.md`](REGISTER-EVERYWHERE.md) | The registries checklist + publish-automation contract. |
 | [`REGISTER-PLAYBOOK.md`](REGISTER-PLAYBOOK.md) | The one-command-when-ready Phase E publish sequence for `starlight-skill-index`. |
 | [`docs/ecosystem-research-2026-07.md`](docs/ecosystem-research-2026-07.md) | Mid-2026 ecosystem intelligence digest (INSTALL / ADOPT / MINE / SKIP verdicts). |
 | [`scripts/gen_readme.py`](scripts/gen_readme.py) | registry.yaml → README matrix + Shields badges. |
 | [`scripts/syndicate.py`](scripts/syndicate.py) | Publish a pack to the registries + write status back (contract defined; publish TODO). |
-| `.github/workflows/` | `publish.yml`, `syndicate.yml`, `refresh-status.yml` (stubs with TODOs). |
+| [`.github/workflows/verify.yml`](.github/workflows/verify.yml) | Required repository, MCP fallback, security-allowlist, and Python compilation gates. Publication automation is deliberately absent until `syndicate.py` is implemented and independently reviewed. |
 
 ---
 

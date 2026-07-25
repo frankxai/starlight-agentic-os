@@ -37,6 +37,8 @@ Configuration (all via environment, no secrets in code)
 * ``STARLIGHT_SCAN_REPORT`` — path to a cached ``scan_report.json`` from
                               ``scan_skill_frontmatter.py``; if unset the scan is
                               computed live from the catalog.
+* ``STARLIGHT_SECURITY_ALLOWLIST`` — path to exact scanner exceptions; when unset,
+                              an allowlist next to the active catalog is used.
 * ``STARLIGHT_SKILLS_ROOT`` — base dir used to resolve a skill's relative ``path``
                               to an on-disk body when ``body_path`` is absent.
 
@@ -130,7 +132,7 @@ def resolve_index_dir() -> Optional[Path]:
         p = Path(env).expanduser()
         return p if p.exists() else None
     here = _here()
-    for cand in (here.parent / "index", here / "index", here.parent):
+    for cand in (here.parent / "index", here / "index", here, here.parent):
         if (cand / "search.py").exists() or (cand / "scan_skill_frontmatter.py").exists():
             return cand
     return None
@@ -153,6 +155,19 @@ def resolve_catalog_path() -> Optional[Path]:
         if c.exists():
             return c
     return None
+
+
+def resolve_security_allowlist_path() -> Optional[Path]:
+    """Locate the allowlist paired with the active catalog, unless overridden."""
+    env = os.environ.get("STARLIGHT_SECURITY_ALLOWLIST")
+    if env:
+        path = Path(env).expanduser()
+        return path if path.exists() else None
+    catalog = resolve_catalog_path()
+    if not catalog:
+        return None
+    path = catalog.parent / "security-allowlist.json"
+    return path if path.exists() else None
 
 
 def db_url() -> Optional[str]:
@@ -487,7 +502,17 @@ def run_security_report() -> Dict[str, Any]:
             "error": f"scan_skill_frontmatter.py not importable: {exc}",
         }
     reports = [scan_mod.scan_skill(e) for e in catalog]
-    report = scan_mod.build_report(reports)
+    allowlisted = []
+    allowlist_path = resolve_security_allowlist_path()
+    if allowlist_path:
+        try:
+            allowlisted = scan_mod._apply_allowlist(reports, allowlist_path)
+        except Exception as exc:
+            return {
+                "available": False,
+                "error": f"security allowlist invalid or stale: {exc}",
+            }
+    report = scan_mod.build_report(reports, allowlisted)
     return _summarize_scan(report, source="live-scan")
 
 
@@ -512,6 +537,7 @@ def _summarize_scan(report: Dict[str, Any], source: str) -> Dict[str, Any]:
         "flagged_skill_ids": flagged_ids,
         "high_severity_skill_ids": high,
         "flagged_ids_by_severity": by_severity,
+        "allowlisted_findings": report.get("allowlisted", []) or [],
         "note": "A skill's routing-visible text (name/description) is an attack "
         "surface — this flags prompt-injection, router-hijack, exfiltration, and "
         "unicode-obfuscation patterns before a skill can influence routing.",

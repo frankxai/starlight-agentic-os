@@ -10,6 +10,11 @@ All three flags were manually triaged and cleared as benign / false-positive. Th
 working correctly (it caught the exact lexical patterns it should); none of Frank's real skills
 carry an actual router-hijack, injection, exfiltration, or homoglyph attack.
 
+**Gate state, 2026-07-25:** the one HIGH finding is now bound to its exact skill id, rule, and
+evidence SHA-256 in `security-allowlist.json`. The two MEDIUM findings remain visible and
+unallowlisted. Required CI fails on any other HIGH, changed evidence, stale exception, or duplicate
+exception.
+
 | Sev | Skill | Rule | Evidence | Triage |
 |---|---|---|---|---|
 | 🔴 HIGH | `superpowers:using-tmux-for-interactive-commands` | `exfiltration_intent` | "…sessions and **send**-**keys**" | **FALSE POSITIVE.** Matched `send…keys` — but "send-keys" is the literal **tmux subcommand name**, not data exfiltration. Vendored superpowers-lab skill. |
@@ -24,9 +29,9 @@ carry an actual router-hijack, injection, exfiltration, or homoglyph attack.
 - The two MEDIUMs are the expected shape of legitimate skills: one names a real MCP endpoint, one
   is a security tool describing its own domain.
 
-## CI recommendation
+## CI contract
 
-Run `scan_skill_frontmatter.py --fail-on high` as the pre-index gate, **plus a tiny allow-list**
-for these three known-benign findings (by skill id + rule), so a *new* HIGH finding fails the
-build while these three don't cause chronic red. Re-triage on every catalog regen — a new HIGH on
-a skill NOT on the allow-list is the real signal.
+Run `scan_skill_frontmatter.py --fail-on high --allowlist index/security-allowlist.json` as the
+pre-index gate. Only the exact HIGH collision is excepted; MEDIUM findings stay in the report for
+review. Re-triage on every catalog regeneration. A new HIGH, modified evidence, or obsolete
+exception blocks the build.

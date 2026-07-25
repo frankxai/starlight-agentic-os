@@ -1,7 +1,8 @@
 # Pack Index Template — the copy-me "Indexed" pattern
 
-*How a pack becomes **discoverable to our own agents** — the third lifecycle state. The pipeline
-and the router contract live in [`index/`](index/); this doc is the pattern to reuse.*
+*How an improved pack becomes **production-discoverable to our own agents** — the third lifecycle
+state. The pipeline and the router contract live in [`index/`](index/); this doc is the pattern to
+reuse. Catalog staging can happen earlier, but it does not complete the lifecycle state.*
 
 > **"Indexed" = an agent can semantically find a pack's skills without loading them all.**
 > Names + descriptions don't scale; a two-stage retriever→reranker over full skill bodies does.
@@ -14,7 +15,7 @@ and the router contract live in [`index/`](index/); this doc is the pattern to r
 ```
  SKILL.md trees ─► gen_catalog.py ─► catalog.json ─► scan_skill_frontmatter.py ─► build_index.py ─► search.py
    (repos +          (walk +           (day-one         (CI SECURITY GATE:          (e5 embeddings     (router
-    plugins)          frontmatter)      discoverability   router-hijack/injection)    → pgvector)        entry point)
+    plugins)          frontmatter)      staging inventory  router-hijack/injection)    → pgvector)        entry point)
 ```
 
 | Stage | Tool | Needs | State on this box |
@@ -65,9 +66,12 @@ Optional `--pack` / `--maturity` push metadata filters into SQL before ranking. 
 3. **Security gate** — `scan_skill_frontmatter.py --catalog catalog.json --fail-on high`. Triage
    every finding; keep a small **allow-list** of confirmed benign hits (lexical collisions like
    tmux `send-keys`) so a *new* HIGH fails the build while known-benign ones don't chronic-red.
-4. **Set status** — flip the pack's `registry.yaml` `indexed`: `done` if it's in the catalog with a
-   clean/benign scan; `in-progress` if a HIGH finding is pending allow-list; else `todo`.
-5. **Build vectors (later, on a capable box)** — see the exact command below.
+4. **Finish improvement first** — the owning pack must be `improve: done` with inspectable eval,
+   safety, and provenance receipts. Catalog presence is only staging evidence.
+5. **Build and verify discovery** — execute the chosen production retrieval path, prove representative
+   queries, and record the receipt.
+6. **Set status** — only then flip `indexed: todo → done`. A HIGH finding, stale exception, failed
+   query receipt, or incomplete improvement keeps the pack at `todo`.
 
 ---
 

@@ -17,7 +17,7 @@ Copy these four things into any pack:
 | **Eval config** | `evals/promptfooconfig.yaml` | promptfoo skill gate: `skill-used` assertion + the three thresholds, with a 2–3 case golden set per gated skill. |
 | **CI workflow** | `.github/workflows/skill-evals.yml` | runs the gate on **skill VERSION bumps** (the version is the contract) and enforces thresholds. |
 | **Provenance** | `pack.meta.yaml` | source · license · checksum · lifecycle status · gated-skills list. Mirrors the central `registry.yaml`. |
-| **Observability env** | `CLAUDE_CODE_ENABLE_TELEMETRY=1` | native Claude Code OTel → self-hosted **Langfuse** (reference stack). Set in CI and in the operator's shell. |
+| **Observability env** | `CLAUDE_CODE_ENABLE_TELEMETRY=1` | native Claude Code OTel → self-hosted **Arize Phoenix** by default, with Langfuse optional for team-scale retention. Set in CI and in the operator's shell. |
 
 ---
 
@@ -51,9 +51,12 @@ See the worked example: [`agentic-creator-os/evals/promptfooconfig.yaml`](https:
 2. Copy `.github/workflows/skill-evals.yml` — no edits needed (path-triggered on `SKILL.md` + the config).
 3. Copy `pack.meta.yaml` — set `name/repo/version/license/origin`, list each gated skill + its
    `skill_version`.
-4. Set `CLAUDE_CODE_ENABLE_TELEMETRY=1` in CI env and your shell; point OTel at your Langfuse.
-5. Flip the pack's central status: `registry.yaml` → `status.improve: in-progress` while cases are
-   being written, `done` once all flagship skills pass the gate in CI.
+4. Set `CLAUDE_CODE_ENABLE_TELEMETRY=1` in CI env and your shell; point OTel at Phoenix (or the
+   explicitly selected team sink) and retain one inspectable live trace receipt.
+5. Record a SHA-256 provenance checksum and central `improve_receipts` for `eval`, `safety`, and
+   `observability`.
+6. Flip the pack's central status: `registry.yaml` → `status.improve: in-progress` while cases are
+   being written, `done` only after all flagship gates pass in CI and all receipts resolve.
 
 ---
 
@@ -80,7 +83,7 @@ constrained authoring machine — see the run command below.
 ```bash
 cd ~/agentic-creator-os
 export ANTHROPIC_API_KEY=...            # required by the anthropic provider
-export CLAUDE_CODE_ENABLE_TELEMETRY=1   # traces -> self-hosted Langfuse
+export CLAUDE_CODE_ENABLE_TELEMETRY=1   # traces -> self-hosted Arize Phoenix by default
 npx --yes promptfoo@latest eval --config evals/promptfooconfig.yaml --output results.json
 npx --yes promptfoo@latest view        # inspect per-metric scores vs the three gates
 ```

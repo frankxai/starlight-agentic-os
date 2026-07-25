@@ -1,11 +1,14 @@
 # Register Everywhere — the operator-registry checklist + publish automation
 
 A pack is not *shipped* until other operators can discover it. This is the checklist and the
-publish/write-back contract. Automated by [`scripts/syndicate.py`](scripts/syndicate.py) and
-`.github/workflows/{publish,syndicate,refresh-status}.yml`.
+publish/write-back contract. [`scripts/syndicate.py`](scripts/syndicate.py) currently validates
+only the lifecycle preconditions and prints a dry-run plan. Tag existence, official-schema
+validation, external publication, and write-back are not implemented. No publication workflow
+exists yet.
 
-> **Precondition (non-negotiable):** only packs with `status.improve: done` may be registered.
-> We never publish un-hardened packs — provenance, evals, and rails come *before* distribution.
+> **Precondition (non-negotiable):** only packs with `status.improve: done` and
+> `status.indexed: done` may be registered. We never publish an un-hardened pack or skip the
+> production-discovery receipt.
 
 ---
 
@@ -44,8 +47,8 @@ publish/write-back contract. Automated by [`scripts/syndicate.py`](scripts/syndi
 ## Publish + write-back contract (what `syndicate.py` must honor)
 
 1. **Input:** a pack name present in `registry.yaml`.
-2. **Preconditions:** `improve == done` AND a clean semver tag exists AND `.mcp/server.json`
-   validates against the official schema.
+2. **Preconditions:** `improve == done` AND `indexed == done` AND a clean semver tag exists AND
+   `.mcp/server.json` validates against the official schema.
 3. **Publish:** for each target registry not already in `status.registered`, run its publish step
    (idempotent — already-registered targets are skipped).
 4. **Write-back:** append each newly-published registry id to `status.registered`; bump
@@ -61,6 +64,7 @@ publish/write-back contract. Automated by [`scripts/syndicate.py`](scripts/syndi
 ```
 Pack: <name>   Version: <semver>
 [ ] improve == done (evals passing, provenance recorded)
+[ ] indexed == done (production discovery receipt recorded)
 [ ] .mcp/server.json validates
 [ ] Official MCP Registry (mcp-publisher, OIDC namespace = frankxai)
 [ ] Glama

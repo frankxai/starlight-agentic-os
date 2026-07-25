@@ -96,10 +96,11 @@ export STARLIGHT_DB_URL="postgresql://user:pass@localhost:5432/starlight_skills"
 
 | Variable | Purpose |
 |----------|---------|
-| `STARLIGHT_CATALOG` | Path to `catalog.json`. Auto-discovers `../index/catalog.json` if unset. |
+| `STARLIGHT_CATALOG` | Path to `catalog.json`. The wheel includes a synchronized catalog; source runs auto-discover `../index/catalog.json`. |
 | `STARLIGHT_INDEX_DIR` | Dir with `search.py` / `scan_skill_frontmatter.py`. Auto-discovered. |
 | `STARLIGHT_DB_URL` / `DATABASE_URL` | Postgres URL. Presence enables the vector path. **Secret.** |
 | `STARLIGHT_SCAN_REPORT` | Cached `scan_report.json`; else `security_report` scans live. |
+| `STARLIGHT_SECURITY_ALLOWLIST` | Exact scan exceptions; defaults to the allowlist beside the active catalog. |
 | `STARLIGHT_SKILLS_ROOT` | Base dir to resolve a skill's relative `path` to its body. |
 
 ---
@@ -182,8 +183,11 @@ pytest test_server.py -q          # with pytest
 python test_server.py             # or standalone (stdlib only)
 ```
 
-The suite builds a tiny inline catalog, asserts ranking/lookup/pack-count
+The source suite builds a tiny inline catalog, asserts ranking/lookup/pack-count
 behavior, and confirms the security scanner flags a deliberately-malicious skill.
+The repository release gate also installs the built wheel into a clean temporary
+environment and proves that its bundled 418-skill catalog works without source-tree
+environment variables.
 
 ---
 

@@ -106,15 +106,16 @@ into context. So:
   one-line descriptions).
 - **Embeddings:** `intfloat/multilingual-e5-base` (768-dim, runs **locally** — sovereign, no API).
 - **Store:** **Postgres + pgvector**.
-- **`catalog.json` day-one** — generate a machine-readable catalog of every indexed skill from
-  the start, before the fancy retrieval exists.
+- **`catalog.json` day-one** — generate a machine-readable staging inventory of candidate skills
+  from the start, before the fancy retrieval exists. Lifecycle `indexed: done` still requires
+  completed improvement and a production discovery receipt.
 - **Payoff:** a semantic router cuts skill-token cost dramatically (documented **456×** reduction
   vs. loading everything) — the difference between an index that scales and a context window that
   doesn't.
 
 **Security — the semantic supply-chain attack class.** Skill descriptions and frontmatter are
 *executed as instructions* by the router. A malicious description is a prompt-injection vector.
-**Scan skill descriptions and frontmatter in CI** (see `refresh-status.yml`) — this is a distinct
+**Scan skill descriptions and frontmatter in CI** (see `.github/workflows/verify.yml`) — this is a distinct
 threat class from ordinary dependency scanning and must be treated as first-class.
 
 ---

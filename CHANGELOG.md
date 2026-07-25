@@ -2,6 +2,33 @@
 
 All notable changes to the Starlight Agentic OS command center. Semver.
 
+## [Unreleased]
+
+### Added
+- Canonical `AGENTS.md` ownership and truth contract, with `CLAUDE.md` as the harness entry point.
+- Fail-closed `scripts/verify_repo.py` repository gate.
+- GitHub verification workflow for registry, catalog, security, MCP fallback, compilation, and
+  distributable package builds.
+- Content-addressed security allowlist plus regression tests. A changed finding invalidates its
+  exception; stale or duplicate exceptions fail.
+- Generated MCP package assets and a clean-install distribution smoke test, so the wheel remains
+  useful without a source-tree `STARLIGHT_CATALOG` override.
+
+### Corrected
+- MCP package links now point to the real `starlight-agentic-os/mcp-server` source.
+- README and registry now describe Phoenix as the default local observability sink and Langfuse as
+  the optional heavier tier.
+- Roadmap phase markers now distinguish executed catalog work from unproved vector, memory,
+  observability, and publication work.
+- Pack lifecycle state now remains sequential: catalog presence is staging evidence, while
+  `indexed: done` requires `improve: done`. Six prematurely completed index states were reset.
+- `starlight-skill-index` was reset from `improve: done` to `in-progress`; package tests are real,
+  while eval, provenance-checksum, and live-observability receipts remain incomplete. CI now
+  requires those exact receipt classes before any future `improve: done`.
+- The original changelog said publication workflow stubs existed. They are absent from the Git
+  tree; this release adds verification only and keeps publication automation closed until the
+  syndication implementation is real and independently reviewed.
+
 ## [0.6.0] — 2026-07-24
 
 Two architecture fixes + domain inventory.

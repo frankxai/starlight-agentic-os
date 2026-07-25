@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "skill_id": "superpowers:using-tmux-for-interactive-commands",
+      "rule": "exfiltration_intent",
+      "evidence_sha256": "5a30d9f89b524b66dda5e1e4fe3b2a2950ff6f7a95bf3da1c43b50ac493ad291",
+      "reason": "The phrase describes tmux send-keys input routing; it does not request transmission of credentials or user data.",
+      "reviewed_on": "2026-07-24"
+    }
+  ]
+}
+

@@ -7,6 +7,7 @@ The publish/write-back contract this script MUST honor:
 
   1. INPUT      : a pack name present in registry.yaml.
   2. PRECONDS   : pack.status.improve == "done"  (never syndicate un-hardened packs)
+                  AND pack.status.indexed == "done" (never skip lifecycle stages)
                   AND pack.version is a clean semver tag that exists in the repo.
                   AND .mcp/server.json validates against the official schema.
   3. PUBLISH    : for each target registry not already in status.registered:
@@ -74,6 +75,12 @@ def main() -> int:
             f"REFUSED: '{args.pack}' improve status is "
             f"'{pack['status'].get('improve')}', not 'done'. "
             "Only hardened packs may be syndicated (see contract precondition 2)."
+        )
+    if pack["status"].get("indexed") != "done":
+        sys.exit(
+            f"REFUSED: '{args.pack}' indexed status is "
+            f"'{pack['status'].get('indexed')}', not 'done'. "
+            "Only production-indexed packs may be syndicated."
         )
 
     already = set(pack["status"].get("registered") or [])

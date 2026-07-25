@@ -8,16 +8,16 @@ Legend: 🔲 not started · 🟡 in progress · ✅ done
 
 ---
 
-## Phase A — Adopt the tripod + reference stack  🔲
+## Phase A — Adopt the tripod + reference stack  🟡
 
 Stand up the sovereign substrate the whole program runs on.
 
-- [ ] Confirm **AGENTS.md** as the canonical memory file across repos; alias `CLAUDE.md` / `GEMINI.md`.
-- [ ] Confirm **SKILL.md** convention + `.claude-plugin/plugin.json` semver on at least one pack.
-- [ ] Stand up **MCP** author-once → per-CLI config generation for one server.
+- [x] Confirm **AGENTS.md** as the canonical repository contract here; alias `CLAUDE.md`.
+- [x] Confirm **SKILL.md** convention + portable exemplar on at least one pack.
+- [x] Stand up **MCP** author-once → per-CLI config generation for one server.
 - [ ] Memory: self-host **Letta** (system of record) + **Mem0 / OpenMemory MCP** (cross-CLI bus).
-- [ ] Observability: **OpenLLMetry → self-hosted Langfuse**; enable native Claude Code OTel
-      (`CLAUDE_CODE_ENABLE_TELEMETRY=1`).
+- [ ] Prove a real **OpenLLMetry → Arize Phoenix** trace; retain Langfuse as the optional heavy tier
+      and enable native Claude Code OTel (`CLAUDE_CODE_ENABLE_TELEMETRY=1`).
 - **Exit:** one pack demonstrably portable across Claude Code + Codex, with memory + traces flowing.
 
 ## Phase B — Populate the registry from real inventory  ✅ (this pass)
@@ -27,31 +27,35 @@ Stand up the sovereign substrate the whole program runs on.
 - [x] Flag dormant vendored decoration (`claude-flow` doc-shells, 9-line stubs, `swarm-lumina`)
       as `origin=absorbed` / `improve=deprecate-candidate`.
 - [x] `gen_readme.py` generates the README status matrix from the registry.
-- **Exit:** SSOT exists, README auto-generates, program is legible. **← you are here.**
+- **Exit:** SSOT exists, README auto-generates, program is legible.
 
-## Phase C — Wire evals + observability  🔲
+## Phase C — Wire evals + observability  🟡
 
 - [ ] Add **promptfoo** per-repo CI gate with `skill-used` assertion + thresholds
       (dispatch ≥ 0.85 / trajectory ≥ 0.90 / integration ≥ 0.80).
 - [ ] Gate the suite on **skill VERSION bumps** (the version is the contract).
-- [ ] Route traces into **Langfuse**; add **Inspect AI** for deeper agentic evals on 1–2 flagships.
+- [ ] Route traces into **Arize Phoenix** by default (Langfuse optional for team retention); add
+      **Inspect AI** for deeper agentic evals on 1–2 flagships.
 - [ ] Promote the first packs from `improve: todo` → `improve: done` once they pass the gate.
 - **Exit:** at least the two centers of gravity (FrankX/ACOS, Arcanea) have a passing eval gate;
       `improve=done` count > 0 in the matrix.
 
-## Phase D — Build the pgvector skill index + catalog  🔲
+## Phase D — Build the pgvector skill index + catalog  🟡
 
-- [ ] Emit `catalog.json` day-one over all indexed skill bodies.
+- [x] Emit `catalog.json` as a day-one staging inventory over candidate skill bodies.
 - [ ] Embed with `intfloat/multilingual-e5-base` (768-dim, local) into **Postgres + pgvector**.
 - [ ] Two-stage retriever → reranker; wire the semantic router (target the documented 456× token cut).
-- [ ] CI scan of skill descriptions/frontmatter (semantic supply-chain attack class).
-- [ ] Flip `indexed: todo → done` per pack as it enters the index.
+- [x] CI scan skill descriptions/frontmatter with exact, content-addressed exceptions.
+- [ ] Flip `indexed: todo → done` only after each pack is improved and has a production-index
+      receipt. Catalog staging alone does not advance lifecycle state.
 - **Exit:** our own agents can semantically discover skills; `indexed` count climbing.
 
 ## Phase E — Register everywhere + CI automation  🟡 (scaffolded 2026-07-24)
 
-- [x] **MCP server built + validated** — `mcp-server/starlight-skill-index` (8/8 smoke tests, real
-      418-catalog query verified). First `improve=done` pack.
+- [x] **MCP server built + package-validated** — source tests and a clean-install 418-catalog
+      wheel receipt pass.
+- [ ] Complete the MCP pack's flagship eval, provenance checksum, and live observability receipt
+      before promoting `improve: in-progress → done`.
 - [x] `server.json` authored + validated (namespace `io.github.frankxai`, repo URL fixed to real repo).
 - [x] **Publish sequence authored** in [`REGISTER-PLAYBOOK.md`](REGISTER-PLAYBOOK.md) — the
       one-command-when-ready package (login → publish → syndicate → marketplace → write-back).
@@ -79,3 +83,8 @@ Stand up the sovereign substrate the whole program runs on.
 Never let a later phase's ambition destabilize the tested core. Every phase adds a layer that can
 be disabled to fall back to the prior phase. Phases C–E can partially overlap across packs, but a
 pack advances one state at a time: **install → improve → indexed → registered**, never skipping.
+
+Current frontier: the catalog-backed staging router and verification baseline are real; no pack
+has completed the governed production-index lifecycle yet. Vector search, live memory, live
+observability receipts, external registration, and fleet-wide eval adoption remain incomplete.
+The registry—not roadmap prose—decides each pack's state.

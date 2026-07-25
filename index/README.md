@@ -58,6 +58,7 @@ for provenance. Build the full vector index later with the run sequence below.
 | `schema.sql` | pgvector schema: `skills` table + HNSW ANN index. |
 | `gen_catalog.py` | Walk repo roots, parse `SKILL.md` frontmatter → `catalog.json`. |
 | `scan_skill_frontmatter.py` | Security scanner / CI gate for router-hijack + injection. |
+| `security-allowlist.json` | Exact, content-addressed exceptions; changed or stale findings fail closed. |
 | `build_index.py` | Embed bodies locally, upsert into pgvector (incremental). |
 | `search.py` | `search(query, k)` retriever→reranker. Router entry point. |
 | `requirements.txt` | Python dependencies. |
@@ -89,7 +90,10 @@ psql "$STARLIGHT_DB_URL" -f index/schema.sql
 python index/gen_catalog.py --roots ./skills ../more-skills --out catalog.json
 
 # 3. SECURITY GATE — scan frontmatter; non-zero exit on HIGH severity
-python index/scan_skill_frontmatter.py --catalog catalog.json --json scan_report.json
+python index/scan_skill_frontmatter.py \
+  --catalog catalog.json \
+  --allowlist index/security-allowlist.json \
+  --json scan_report.json
 #    (in CI: run this before build_index and fail the pipeline on non-zero exit)
 
 # 4. build/refresh the index (incremental: only changed skills are re-embedded)
@@ -175,4 +179,5 @@ router can take `results[0]` (or apply its own threshold on `rerank_score` /
 - **Cross-encoder optional:** if the reranker model can't load, search
   transparently falls back to cosine re-scoring (`reranked_by: "cosine"`).
 - **CI gate:** `scan_skill_frontmatter.py --fail-on high` (default) blocks a
-  poisoned skill from entering the index.
+  poisoned skill from entering the index. An exception must bind the exact
+  skill id, rule, and evidence SHA-256; stale or duplicate exceptions are errors.

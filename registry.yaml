@@ -6,22 +6,23 @@
 #   install    : present and working            (done | partial | todo)
 #   improve    : hardened to the quality bar     (todo | in-progress | done | deprecate-candidate)
 #                (evals + rails + provenance)
-#   indexed    : discoverable via semantic index (todo | done)
+#   indexed    : production-discoverable after improve=done (todo | in-progress | done)
 #   registered : published to operator registries (list; empty = none yet)
 #
 # origin: original (Frank/team authored) | absorbed (vendored upstream) | forked
 # Status seeded 2026-07-23 from the Phase 1-3 portfolio audits. Counts are the
 # corrected maxdepth-2 recount (Phase 2 §1), not the inflated pass-2 figures.
-# CI (refresh-status.yml) writes `registered:` back into this file after publish.
+# A future reviewed publication workflow must write `registered:` back only
+# after external publication succeeds. No such workflow is active today.
 # ============================================================================
 
 meta:
   schema_version: 1
   generated_note: "README status matrix is generated from this file by scripts/gen_readme.py"
-  index: "index/catalog.json — 418 skills catalogued (Phase D, 2026-07-24); security scan in index/security-scan-summary.md. Vector index (pgvector) authored, not yet built."
-  mcp_server: "mcp-server/ = starlight-skill-index (search_skills/get_skill/list_packs/security_report) over index/catalog.json; 8/8 smoke tests pass. Publish-ready — see REGISTER-PLAYBOOK.md."
+  index: "index/catalog.json — 418 skills in the staging inventory (Phase D, 2026-07-24); catalog presence is not indexed=done. Security scan is in index/security-scan-summary.md. Vector index (pgvector) is authored, not yet built."
+  mcp_server: "mcp-server/ = starlight-skill-index (search_skills/get_skill/list_packs/security_report) over a bundled catalog; source tests and clean-install wheel smoke tests pass. External publication is unproved and remains a named gate."
   portable: "portable/ = install.sh/ps1 symlinking a pack across ~/.claude, ~/.agents, ~/.gemini skill dirs; AGENTS.md aliasing; acos-meta exemplar is portable-clean (4/4)."
-  observability: "observability/ = self-host Langfuse compose + OpenLLMetry OTel env (authored, not run)."
+  observability: "observability/ = OpenLLMetry/OTel with Arize Phoenix as the default local sink; Langfuse remains the optional team/retention tier. Instrumentation is authored, not yet proven by a committed live trace receipt."
   registries_tracked:
     - official-mcp-registry      # server.json + mcp-publisher, GitHub-OIDC namespace
     - glama
@@ -43,8 +44,8 @@ packs:
     source_url: https://github.com/frankxai/FrankX
     origin: original
     summary: "FrankX Digital Haven — 33 skills, 119 agents, v-swarm + aco-router. Largest personal roster."
-    status: { install: done, improve: todo, indexed: done, registered: [] }
-    indexed_note: "33 skills in index/catalog.json; scan clean (0 findings)."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    indexed_note: "33 skills are staged in index/catalog.json; improve and production-index receipts are still required."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
 
   - name: agentic-creator-os
@@ -54,9 +55,9 @@ packs:
     source_url: https://github.com/frankxai/agentic-creator-os
     origin: original
     summary: "ACOS v12 open-core — 90 skills, 63 agents, acos-meta + integrity-guard. Twin of FrankX engineering. EXEMPLAR pack for the quality-bar template."
-    status: { install: done, improve: in-progress, indexed: done, registered: [] }
+    status: { install: done, improve: in-progress, indexed: todo, registered: [] }
     improve_note: "Phase C exemplar: eval gate authored at evals/promptfooconfig.yaml (worked skill: acos-meta v1.0.0); pack.meta.yaml provenance added. Not yet executed. See PACK-QUALITY-TEMPLATE.md."
-    indexed_note: "104 skills in index/catalog.json; scan clean (1 benign medium: higgsfield-operator MCP URL)."
+    indexed_note: "104 skills are staged in index/catalog.json; the pack remains improve=in-progress and is not a completed production-index release."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
 
   - name: arcanea
@@ -66,8 +67,8 @@ packs:
     source_url: https://github.com/frankxai/arcanea-ai-app
     origin: original
     summary: "Arcanea — 65 skills, 44 agents (incl. Luminor hierarchy). design-verifier runs real Playwright/Lighthouse gates."
-    status: { install: done, improve: todo, indexed: done, registered: [] }
-    indexed_note: "124 skills in index/catalog.json; scan clean (0 findings)."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    indexed_note: "124 skills are staged in index/catalog.json; improve and production-index receipts are still required."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
 
   - name: starlight-intelligence-system
@@ -77,8 +78,8 @@ packs:
     source_url: https://github.com/frankxai/Starlight-Intelligence-System
     origin: original
     summary: "SIS — 146-agent registry, council/dispatch, multi-MB JSONL dispatch ledger (real usage). Governance-heavy."
-    status: { install: done, improve: todo, indexed: done, registered: [] }
-    indexed_note: "31 skills in index/catalog.json (SIS is agent-based; these are its skills). Scan clean (1 benign medium: secret-detector describing its own domain)."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    indexed_note: "31 SIS skills are staged in index/catalog.json; improve and production-index receipts are still required."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
 
   # -------------------------------------------------------------------------
@@ -91,9 +92,9 @@ packs:
     source_url: https://github.com/frankxai/starlight-agentic-os/tree/main/mcp-server
     origin: original
     summary: "MCP server (FastMCP) making the 418-skill index routable: search_skills/get_skill/list_packs/security_report, vector->catalog graceful fallback. The queryable skill router itself."
-    status: { install: done, improve: done, indexed: todo, registered: [] }
-    improve_note: "8/8 smoke tests pass (test_server.py); real query against 418-skill catalog verified ('review a github pull request' -> arcanea:github-code-review); server.json validated. FIRST pack at improve=done."
-    registered_note: "Publish-ready. Fire REGISTER-PLAYBOOK.md: mcp-publisher -> official MCP registry (io.github.frankxai) -> syndicate -> marketplace.json."
+    status: { install: done, improve: in-progress, indexed: todo, registered: [] }
+    improve_note: "Source tests, clean-install package tests, exact security exceptions, and repository CI are implemented. Flagship promptfoo eval, SHA-256 provenance, and live observability receipts remain incomplete, so improve is not done."
+    registered_note: "Publication candidate only. Clean-install package proof and independent review are required before the named human registry gate; no external publication receipt exists."
     provenance: { checksum: null, added: 2026-07-24, last_reviewed: 2026-07-24 }
 
   # -------------------------------------------------------------------------
@@ -129,8 +130,8 @@ packs:
     source_url: https://github.com/frankxai/frankx-app-forge
     origin: original
     summary: "19 agents / 12 skills — conductor-led product pipeline (scout->strategist->ux/story->craft->gate->build->release). Most complete vertical team on disk."
-    status: { install: done, improve: todo, indexed: done, registered: [] }
-    indexed_note: "12 skills in index/catalog.json (via .claude/plugins); scan clean (0 findings)."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    indexed_note: "12 skills are staged in index/catalog.json via .claude/plugins; improve and production-index receipts are still required."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
 
   - name: gencreator-content-team
@@ -236,9 +237,9 @@ packs:
     source_url: https://github.com/obra/superpowers
     origin: absorbed
     summary: "Well-absorbed process skills (brainstorming/TDD/systematic-debugging) with a real running server. Actively enforced, not decorative — keep current."
-    status: { install: done, improve: todo, indexed: in-progress, registered: [] }
-    indexed_note: "19 skills in index/catalog.json (via .claude/plugins). Held at in-progress: scan raised 1 HIGH on using-tmux (exfiltration_intent) — confirmed BENIGN false-positive (matched tmux 'send-keys'). Promote to done once added to the CI allow-list. See index/security-scan-summary.md."
-    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    indexed_note: "19 skills are staged in index/catalog.json via .claude/plugins. The using-tmux exfiltration_intent match is bound to one exact evidence hash; improve and production-index receipts are still required."
+    provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-25 }
 
   # -------------------------------------------------------------------------
   # ABSORBED-BUT-DORMANT DECORATION — deprecate candidates (Phase 1/2 flagged)
