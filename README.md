@@ -76,7 +76,7 @@ OpenLLMetry OTel (authored).
 ## Status matrix
 
 <!-- STATUS-MATRIX:START -->
-![packs](https://img.shields.io/badge/packs-28-blue) ![install](https://img.shields.io/badge/install-25%2F28-brightgreen) ![improve](https://img.shields.io/badge/improve-0%2F28-orange) ![indexed](https://img.shields.io/badge/indexed-0%2F28-orange) ![registered](https://img.shields.io/badge/registered-0%2F28-orange) ![deprecate](https://img.shields.io/badge/deprecate-10-yellow)
+![packs](https://img.shields.io/badge/packs-28-blue) ![install](https://img.shields.io/badge/install-25%2F28-brightgreen) ![improve](https://img.shields.io/badge/improve-1%2F28-green) ![indexed](https://img.shields.io/badge/indexed-0%2F28-orange) ![registered](https://img.shields.io/badge/registered-0%2F28-orange) ![deprecate](https://img.shields.io/badge/deprecate-10-yellow)
 
 | Pack | Origin | Ver | Install | Improve | Indexed | Registered |
 |---|---|---|:--:|:--:|:--:|---|
@@ -84,7 +84,7 @@ OpenLLMetry OTel (authored).
 | `agentic-creator-os` | original | 12.0.0 | ✅ | 🟡 | ⬜ | ⬜ none |
 | `arcanea` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `starlight-intelligence-system` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
-| `starlight-skill-index` | original | 0.1.1 | ✅ | 🟡 | ⬜ | ⬜ none |
+| `starlight-skill-index` | original | 0.1.1 | ✅ | ✅ | ⬜ | ⬜ none |
 | `hermes` | original | 0.1.0 | ✅ | 🟡 | ⬜ | ⬜ none |
 | `starlight-gravity-engine` | original | 0.1.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `app-studio-team` | original | 0.1.0 | ✅ | ⬜ | ⬜ | ⬜ none |

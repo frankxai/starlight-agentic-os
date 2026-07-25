@@ -1,0 +1,77 @@
+{
+  "schema_version": "starlight.pack_evidence.eval.v1",
+  "pack": "starlight-skill-index",
+  "version": "0.1.1",
+  "source_commit": "a9d4738960cf0d784a959ce1f7739a3deb88a989",
+  "verified_at": "2026-07-25T05:58:35+02:00",
+  "verifier": "codex:/root/agentic_router_certifier",
+  "environment": {
+    "python": "3.12.13",
+    "requirements": "requirements-dev.txt",
+    "build_backend": "hatchling==1.31.0",
+    "build_frontend": "build==1.3.0"
+  },
+  "results": [
+    {
+      "command": "python scripts/validate_repo.py",
+      "outcome": "pass",
+      "detail": "28 packs validated; lifecycle, current MCP schema, and identities are coherent."
+    },
+    {
+      "command": "python mcp-server/test_server.py",
+      "outcome": "pass",
+      "detail": "10/10 router and runtime checks passed."
+    },
+    {
+      "command": "python index/test_scan_skill_frontmatter.py",
+      "outcome": "pass",
+      "detail": "4/4 scanner checks passed."
+    },
+    {
+      "command": "python -m unittest discover -v -s tests -p 'test_*.py'",
+      "outcome": "pass",
+      "detail": "9/9 governance checks passed."
+    },
+    {
+      "command": "bash portable/verify-portability.sh portable/packs/acos-meta",
+      "outcome": "pass",
+      "detail": "4/4 portability checks passed."
+    },
+    {
+      "command": "python scripts/gen_readme.py --check",
+      "outcome": "pass",
+      "detail": "Generated lifecycle matrix is current."
+    },
+    {
+      "command": "python scripts/sync_mcp_assets.py --check",
+      "outcome": "pass",
+      "detail": "3/3 bundled assets are byte-aligned with their governed sources."
+    },
+    {
+      "command": "python -m compileall -q index mcp-server portable scripts",
+      "outcome": "pass",
+      "detail": "Python source compiled without errors."
+    },
+    {
+      "command": "python -m build --wheel --sdist mcp-server",
+      "outcome": "pass",
+      "detail": "A clean Git archive produced an isolated wheel and sdist."
+    },
+    {
+      "command": "python scripts/test_built_distribution.py",
+      "outcome": "pass",
+      "detail": "9/9 clean-install assertions passed without PYTHONPATH or STARLIGHT_* overrides."
+    }
+  ],
+  "artifacts": {
+    "wheel": {
+      "bytes": 66692,
+      "sha256": "8b522f49dc44bbdaf29315e4ad9ed2586054fb6c036bce2a2aeda7e2acef9401"
+    },
+    "sdist": {
+      "bytes": 69583,
+      "sha256": "c80df2612bb7f6baaf5916e221d46666e8763ab5276113d65006727ff721e7de"
+    }
+  },
+  "verdict": "pass"
+}

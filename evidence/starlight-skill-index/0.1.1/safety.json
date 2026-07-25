@@ -1,0 +1,28 @@
+{
+  "schema_version": "starlight.pack_evidence.safety.v1",
+  "pack": "starlight-skill-index",
+  "version": "0.1.1",
+  "source_commit": "a9d4738960cf0d784a959ce1f7739a3deb88a989",
+  "verified_at": "2026-07-25T05:58:35+02:00",
+  "verifier": "codex:/root/agentic_router_certifier",
+  "security_scan": {
+    "skills_scanned": 418,
+    "unallowlisted_high": 0,
+    "medium": 2,
+    "low": 0,
+    "content_addressed_exceptions": 1,
+    "report_sha256": "c82ae2e0c390bc90db8148e509f0ff236f28217ffb9ba9eef109ca5369582ae3",
+    "live_report_matches_committed_report": true
+  },
+  "controls_verified": [
+    "Skill-body lookup rejects traversal, absolute-path escape, and symlink escape outside an explicit STARLIGHT_SKILLS_ROOT.",
+    "Shared HTTP rejects 0.0.0.0 and remains loopback-only by default.",
+    "Catalog and certification paths reject traversal and symlink indirection.",
+    "Artifact digests reject symlinks.",
+    "Lifecycle transitions, schema bypass, and vacuous certification evidence fail closed.",
+    "Publication and syndication adapters refuse to claim mutations they did not perform.",
+    "Security exceptions are exact and content-addressed; stale, duplicate, malformed, or changed evidence is rejected."
+  ],
+  "external_publication_performed": false,
+  "verdict": "pass"
+}

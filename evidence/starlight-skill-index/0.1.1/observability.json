@@ -1,0 +1,31 @@
+{
+  "schema_version": "starlight.pack_evidence.observability.v1",
+  "pack": "starlight-skill-index",
+  "version": "0.1.1",
+  "source_commit": "a9d4738960cf0d784a959ce1f7739a3deb88a989",
+  "verified_at": "2026-07-25T05:58:35+02:00",
+  "verifier": "codex:/root/agentic_router_certifier",
+  "runtime_observed": {
+    "version": "0.1.1",
+    "catalog_source": "catalog-fallback",
+    "fallback_reason_exposed": true,
+    "security_source": "live-scan",
+    "catalog_skills": 418,
+    "catalog_packs": 8,
+    "security_high": 0,
+    "security_medium": 2,
+    "security_low": 0,
+    "security_allowlisted": 1,
+    "default_transport": "stdio",
+    "http_host": "127.0.0.1",
+    "http_port": 8631
+  },
+  "traceability_verified": [
+    "Search results expose stable ranked skill identifiers.",
+    "Startup logging records version, transport, catalog, index, and vector-mode state.",
+    "Fallback mode and its reason are explicit instead of being reported as indexed success.",
+    "Security-report provenance distinguishes a live scan from committed evidence."
+  ],
+  "external_telemetry_stack_started": false,
+  "verdict": "pass"
+}

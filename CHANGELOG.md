@@ -12,8 +12,10 @@ All notable changes to the Starlight Agentic OS command center. Semver.
 - Certification v2 evidence classes for eval, safety, and observability.
 
 ### Changed
-- Prepared `starlight-skill-index` 0.1.1 with pinned build tooling, catalog path
-  containment, exact live-vs-committed scan equality, and distribution gates.
+- Certified `starlight-skill-index` 0.1.1 at source commit
+  `a9d4738960cf0d784a959ce1f7739a3deb88a989` with pinned build tooling,
+  catalog path containment, exact live-vs-committed scan equality, and clean
+  distribution gates. Index promotion and external publication remain separate.
 
 ## [0.7.0] — 2026-07-25
 

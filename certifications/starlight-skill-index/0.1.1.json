@@ -1,0 +1,73 @@
+{
+  "schema_version": "starlight.pack_certification.v2",
+  "pack": "starlight-skill-index",
+  "version": "0.1.1",
+  "repository": "frankxai/starlight-agentic-os",
+  "artifact_root": "mcp-server",
+  "source_commit": "a9d4738960cf0d784a959ce1f7739a3deb88a989",
+  "artifact": {
+    "sha256": "85762f14071910dc92736034966b2b934f1bff10a00b6d3b79da338f346e07d1",
+    "file_count": 12,
+    "bytes": 290593
+  },
+  "tests": [
+    {
+      "command": "python scripts/validate_repo.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python mcp-server/test_server.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python index/test_scan_skill_frontmatter.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m unittest discover -v -s tests -p 'test_*.py'",
+      "exit_code": 0
+    },
+    {
+      "command": "bash portable/verify-portability.sh portable/packs/acos-meta",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/gen_readme.py --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/sync_mcp_assets.py --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m compileall -q index mcp-server portable scripts",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m build --wheel --sdist mcp-server",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/test_built_distribution.py",
+      "exit_code": 0
+    }
+  ],
+  "maker": "OpenAI Codex /root",
+  "verifier": "codex:/root/agentic_router_certifier",
+  "verified_at": "2026-07-25T05:58:35+02:00",
+  "verdict": "pass",
+  "evidence": {
+    "eval": {
+      "path": "evidence/starlight-skill-index/0.1.1/eval.json",
+      "sha256": "30aa183d6629e945a537e2fba84e4f71c293acc8c54cdf59bc86a82b751a3f8e"
+    },
+    "safety": {
+      "path": "evidence/starlight-skill-index/0.1.1/safety.json",
+      "sha256": "a421664bea6b71db147395cfaad18f12c8fe5c4b0bfd881d8c6b1c044365052f"
+    },
+    "observability": {
+      "path": "evidence/starlight-skill-index/0.1.1/observability.json",
+      "sha256": "b1b6a7145f053a346c88e376b629f505f3735a22dc7701ec75ad0a34471b8598"
+    }
+  }
+}
