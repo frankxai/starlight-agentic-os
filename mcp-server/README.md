@@ -50,9 +50,10 @@ via a `mode` field:
   not see this mode.
 - **`catalog-fallback`** — pure standard library: TF-IDF cosine over each skill's
   `name + description + pack`, blended with a keyword-overlap boost. Needs nothing
-  but `catalog.json`. This is what runs today, so the server is **useful before any
-  embeddings exist**. It is a solid keyword-aware ranker; it is not as strong as
-  the vector path on paraphrased/semantic queries.
+  but `catalog.json`. The wheel ships the governed catalog, scanner, and exact
+  exception file, so this mode works from a clean install without a source
+  checkout or environment override. It is a solid keyword-aware ranker; it is
+  not as strong as the vector path on paraphrased/semantic queries.
 
 The switch is automatic: if `STARLIGHT_DB_URL` (or `DATABASE_URL`) is set the
 server tries the vector path and **degrades to the fallback on any failure**
@@ -103,6 +104,7 @@ export STARLIGHT_DB_URL="postgresql://user:pass@localhost:5432/starlight_skills"
 | `STARLIGHT_INDEX_DIR` | Dir with `search.py` / `scan_skill_frontmatter.py`. Auto-discovered. |
 | `STARLIGHT_DB_URL` / `DATABASE_URL` | Postgres URL. Presence enables the vector path. **Secret.** |
 | `STARLIGHT_SCAN_REPORT` | Cached `scan_report.json`; else `security_report` scans live. |
+| `STARLIGHT_SECURITY_ALLOWLIST` | Optional exact content-addressed scanner exceptions; defaults to the file beside the active catalog. |
 | `STARLIGHT_SKILLS_ROOT` | Explicit trust root containing every skill body the server may read. Traversal and symlink escape fail closed. |
 
 ---
@@ -178,7 +180,10 @@ Claude Code one-liner: `claude mcp add starlight-skill-index --env STARLIGHT_CAT
 
 ## Test
 
-The fallback path is fully testable with no torch/DB/network:
+The fallback path is fully testable with no torch/DB/network. The repository
+gate also builds a wheel and sdist, verifies their assets byte-for-byte, installs
+the wheel into a clean environment, and executes search plus security reporting
+with all `STARLIGHT_*` and `PYTHONPATH` overrides removed.
 
 ```bash
 pytest test_server.py -q          # with pytest

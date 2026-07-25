@@ -1,10 +1,10 @@
 {
   "scanned": 418,
-  "flagged": 3,
+  "flagged": 2,
   "severity_counts": {
     "low": 0,
     "medium": 2,
-    "high": 1
+    "high": 0
   },
   "skills": [
     {
@@ -36,21 +36,16 @@
           "evidence": "...ort, file, or vault batch for credentials, API keys, tokens, and sensit..."
         }
       ]
-    },
+    }
+  ],
+  "allowlisted": [
     {
-      "id": "superpowers:using-tmux-for-interactive-commands",
-      "name": "using-tmux-for-interactive-commands",
-      "path": "cache/superpowers-marketplace/superpowers-lab/0.4.0/skills/using-tmux-for-interactive-commands/SKILL.md",
-      "max_severity": "high",
-      "findings": [
-        {
-          "rule": "exfiltration_intent",
-          "severity": "high",
-          "field": "description",
-          "message": "Solicits sending sensitive data to an external destination.",
-          "evidence": "...through detached sessions and send-keys"
-        }
-      ]
+      "skill_id": "superpowers:using-tmux-for-interactive-commands",
+      "rule": "exfiltration_intent",
+      "severity": "high",
+      "evidence_sha256": "5a30d9f89b524b66dda5e1e4fe3b2a2950ff6f7a95bf3da1c43b50ac493ad291",
+      "reason": "The phrase describes tmux send-keys input routing; it does not request transmission of credentials or user data.",
+      "reviewed_on": "2026-07-24"
     }
   ]
 }

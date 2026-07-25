@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
+.pytest_cache/
+mcp-server/dist/
+mcp-server/build/
 
 # Node (for future marketplace tooling)
 node_modules/
