@@ -18,8 +18,9 @@ All notable changes to the Starlight Agentic OS command center. Semver.
 - MCP manifest aligned to the current stable `2025-12-11` registry schema.
 - Router package URLs now resolve to the canonical repository and its PyPI
   README carries the required MCP ownership token.
-- `starlight-skill-index` is temporarily `improve=in-progress` until its
-  independent exact-byte receipt lands.
+- `starlight-skill-index` is now `improve=done` after independent verification
+  of source commit `bbd3b5a6faf752187987a6392b5c5a91c9ddc826` and its exact
+  58,177-byte artifact; indexing and public registration remain separate gates.
 - Publishing and syndication paths no longer claim success through TODO stubs.
 - Rolled six premature `indexed` states back to `todo`; catalog presence is now
   explicitly distinct from lifecycle promotion.
