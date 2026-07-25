@@ -7,9 +7,10 @@ its own catalog/model. One process, one catalog, one model, many clients.
 Endpoint after start: **`http://127.0.0.1:8631/mcp`** (streamable-HTTP).
 Configure every CLI with that URL (see [`../README.md`](../README.md) → *Add it to your AI CLI*).
 
-Env the service honors: `STARLIGHT_HTTP_HOST` (default `127.0.0.1`),
-`STARLIGHT_HTTP_PORT` (default `8631`), `STARLIGHT_CATALOG`, `STARLIGHT_DB_URL`
-(enables the vector path), `STARLIGHT_SCAN_REPORT`.
+Env the service honors: `STARLIGHT_HTTP_PORT` (default `8631`),
+`STARLIGHT_CATALOG`, `STARLIGHT_DB_URL` (enables the vector path), and
+`STARLIGHT_SCAN_REPORT`. `STARLIGHT_HTTP_HOST` is fixed to `127.0.0.1` for
+unauthenticated operation.
 
 > Bind to `127.0.0.1` (localhost only). Do **not** expose this port off-host without
 > an auth proxy — it serves your whole skill catalog.

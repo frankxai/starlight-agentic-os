@@ -1,5 +1,7 @@
 # starlight-skill-index — an MCP server that makes a skill library routable
 
+<!-- mcp-name: io.github.frankxai/starlight-skill-index -->
+
 `io.github.frankxai/starlight-skill-index` turns Frank's semantic skill index
 into a set of tools any MCP-speaking AI CLI can call. It wraps the `index/`
 package (a retriever→reranker over a pgvector store of e5 embeddings, a
@@ -80,9 +82,10 @@ duplicated N times. Run **one** `--http` service and point every CLI at its URL:
 **one process, one catalog, one model, many clients.** The catalog + fallback ranker
 are a lazy singleton warmed once at startup (`warm_singletons()`); the vector model is
 cached in `sys.modules`. Deploy it as an always-on service — see
-[`deploy/`](deploy/) (Windows Task Scheduler + systemd). Override the bind with
-`STARLIGHT_HTTP_HOST` / `STARLIGHT_HTTP_PORT`; `STARLIGHT_TRANSPORT=http|sse|stdio`
-also selects the mode.
+[`deploy/`](deploy/) (Windows Task Scheduler + systemd). Override the port with
+`STARLIGHT_HTTP_PORT`; `STARLIGHT_TRANSPORT=http|sse|stdio` also selects the mode.
+Unauthenticated shared transport is fixed to `127.0.0.1`; any other
+`STARLIGHT_HTTP_HOST` value fails closed.
 
 Optionally enable the vector path later:
 
@@ -100,7 +103,7 @@ export STARLIGHT_DB_URL="postgresql://user:pass@localhost:5432/starlight_skills"
 | `STARLIGHT_INDEX_DIR` | Dir with `search.py` / `scan_skill_frontmatter.py`. Auto-discovered. |
 | `STARLIGHT_DB_URL` / `DATABASE_URL` | Postgres URL. Presence enables the vector path. **Secret.** |
 | `STARLIGHT_SCAN_REPORT` | Cached `scan_report.json`; else `security_report` scans live. |
-| `STARLIGHT_SKILLS_ROOT` | Base dir to resolve a skill's relative `path` to its body. |
+| `STARLIGHT_SKILLS_ROOT` | Explicit trust root containing every skill body the server may read. Traversal and symlink escape fail closed. |
 
 ---
 

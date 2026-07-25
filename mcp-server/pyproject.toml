@@ -38,9 +38,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/frankxai/starlight-skill-index"
-Repository = "https://github.com/frankxai/starlight-skill-index"
-Issues = "https://github.com/frankxai/starlight-skill-index/issues"
+Homepage = "https://github.com/frankxai/starlight-agentic-os/tree/main/mcp-server"
+Repository = "https://github.com/frankxai/starlight-agentic-os"
+Issues = "https://github.com/frankxai/starlight-agentic-os/issues"
 
 [project.scripts]
 starlight-skill-index = "server:main"

@@ -37,14 +37,13 @@ Configuration (all via environment, no secrets in code)
 * ``STARLIGHT_SCAN_REPORT`` — path to a cached ``scan_report.json`` from
                               ``scan_skill_frontmatter.py``; if unset the scan is
                               computed live from the catalog.
-* ``STARLIGHT_SKILLS_ROOT`` — base dir used to resolve a skill's relative ``path``
-                              to an on-disk body when ``body_path`` is absent.
+* ``STARLIGHT_SKILLS_ROOT`` — required trust root for resolving any skill body.
 
 Run
 ---
     python server.py            # stdio (one process per client; single-user local)
     python server.py --http     # ONE shared service at http://127.0.0.1:8631/mcp
-                                #   (STARLIGHT_HTTP_HOST / STARLIGHT_HTTP_PORT to override;
+                                #   (STARLIGHT_HTTP_PORT may override the port;
                                 #    STARLIGHT_TRANSPORT=http|sse|stdio also selects it)
 
 Why the shared HTTP mode exists (RAM)
@@ -368,24 +367,28 @@ def run_search_skills(query: str, k: int = 5) -> Dict[str, Any]:
 
 
 def _resolve_body_path(entry: Dict[str, Any]) -> Optional[Path]:
-    body_path = entry.get("body_path")
-    if body_path:
-        p = Path(str(body_path))
-        if p.exists():
-            return p
-    rel = entry.get("path")
-    if rel:
-        root = os.environ.get("STARLIGHT_SKILLS_ROOT")
-        bases = []
-        if root:
-            bases.append(Path(root).expanduser())
-        cat = resolve_catalog_path()
-        if cat:
-            bases.append(cat.parent)
-        for base in bases:
-            p = base / str(rel)
-            if p.exists():
-                return p
+    root_value = os.environ.get("STARLIGHT_SKILLS_ROOT")
+    if not root_value:
+        return None
+    try:
+        root = Path(root_value).expanduser().resolve(strict=True)
+    except (OSError, RuntimeError):
+        return None
+    if not root.is_dir():
+        return None
+
+    for value in (entry.get("body_path"), entry.get("path")):
+        if not value:
+            continue
+        raw = Path(str(value)).expanduser()
+        candidate = raw if raw.is_absolute() else root / raw
+        try:
+            resolved = candidate.resolve(strict=True)
+            resolved.relative_to(root)
+        except (OSError, RuntimeError, ValueError):
+            continue
+        if resolved.is_file():
+            return resolved
     return None
 
 
@@ -671,8 +674,17 @@ def _select_transport() -> Tuple[str, str, int]:
         transport = "stdio"
     if transport in ("http", "streamable-http", "shared"):
         transport = "streamable-http"
+    if transport not in {"stdio", "streamable-http", "sse"}:
+        raise ValueError(f"unsupported STARLIGHT_TRANSPORT: {transport}")
     host = os.environ.get("STARLIGHT_HTTP_HOST", "127.0.0.1")
+    if host != "127.0.0.1":
+        raise ValueError(
+            "unauthenticated shared transport is loopback-only; "
+            "STARLIGHT_HTTP_HOST must be 127.0.0.1"
+        )
     port = int(os.environ.get("STARLIGHT_HTTP_PORT", "8631"))
+    if not 1 <= port <= 65535:
+        raise ValueError("STARLIGHT_HTTP_PORT must be between 1 and 65535")
     return transport, host, port
 
 

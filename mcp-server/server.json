@@ -1,8 +1,8 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.frankxai/starlight-skill-index",
-  "description": "Semantic router over a large SKILL.md library. search_skills returns the best-matching skills for a task so an agent loads one skill body instead of scanning the whole catalog — cutting skill-routing token cost. Also exposes get_skill, list_packs, and a frontmatter security_report. Degrades gracefully to a stdlib catalog fallback when the pgvector store isn't built.",
-  "status": "active",
+  "title": "Starlight Skill Index",
+  "description": "Governed skill routing with catalog search, body lookup, pack inventory, and security reports.",
   "version": "0.1.0",
   "repository": {
     "url": "https://github.com/frankxai/starlight-agentic-os",
@@ -46,7 +46,7 @@
         },
         {
           "name": "STARLIGHT_SKILLS_ROOT",
-          "description": "Base directory used to resolve a skill's relative path to its on-disk body when body_path is absent.",
+          "description": "Trusted base directory that contains every skill body the server may read.",
           "isRequired": false,
           "isSecret": false
         }

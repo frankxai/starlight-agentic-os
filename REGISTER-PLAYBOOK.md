@@ -6,8 +6,10 @@ network, and the `frankxai` GitHub login. This is the operator checklist; the re
 in [`REGISTER-EVERYWHERE.md`](REGISTER-EVERYWHERE.md).*
 
 > **Preconditions (verify before firing):**
-> - Pack `improve == done` (starlight-skill-index: 8/8 smoke tests pass ✅).
-> - `mcp-server/server.json` validates ✅ and `repository.url` points at the real repo
+> - Pack `improve == done` and `python3 scripts/verify_certifications.py starlight-skill-index`
+>   passes for the exact current bytes.
+> - `mcp-server/server.json` uses the current stable `2025-12-11` schema and
+>   `repository.url` points at the real repo
 >   (`https://github.com/frankxai/starlight-agentic-os`, subfolder `mcp-server`) ✅.
 > - The runnable artifact is reachable by the registry's declared install path (see step 0 —
 >   the `server.json` currently declares a **pypi** package `starlight-skill-index@0.1.0`, which
@@ -25,9 +27,9 @@ in [`REGISTER-EVERYWHERE.md`](REGISTER-EVERYWHERE.md).*
   python -m build            # needs pyproject.toml (present) + `pip install build`
   python -m twine upload dist/*   # requires a PyPI account/token for 'starlight-skill-index'
   ```
-- **(b) Switch to a GitHub-source package** (no PyPI needed) — edit `mcp-server/server.json`
-  `packages[0]` to a `registryType: "oci"`/github source, or ship as an `mcpb` bundle. Simpler if
-  you don't want a PyPI release. **Pick one before step 2.**
+- **(b) Publish a signed OCI or MCPB artifact** — the official registry does not
+  accept an arbitrary Git repository as a package. Use a supported `oci` identifier
+  or a GitHub Release `.mcpb` URL plus `fileSha256`. **Pick one before step 2.**
 
 ---
 

@@ -8,13 +8,14 @@ Legend: 🔲 not started · 🟡 in progress · ✅ done
 
 ---
 
-## Phase A — Adopt the tripod + reference stack  🔲
+## Phase A — Adopt the tripod + reference stack  🟡
 
 Stand up the sovereign substrate the whole program runs on.
 
-- [ ] Confirm **AGENTS.md** as the canonical memory file across repos; alias `CLAUDE.md` / `GEMINI.md`.
-- [ ] Confirm **SKILL.md** convention + `.claude-plugin/plugin.json` semver on at least one pack.
-- [ ] Stand up **MCP** author-once → per-CLI config generation for one server.
+- [x] Confirm **AGENTS.md** as the canonical repository memory file here.
+- [x] Confirm **SKILL.md** convention on the portable `acos-meta` exemplar.
+- [x] Stand up one author-once MCP server with documented per-CLI configuration.
+- [ ] Propagate the AGENTS/SKILL/MCP contract across governed repositories.
 - [ ] Memory: self-host **Letta** (system of record) + **Mem0 / OpenMemory MCP** (cross-CLI bus).
 - [ ] Observability: **OpenLLMetry → self-hosted Langfuse**; enable native Claude Code OTel
       (`CLAUDE_CODE_ENABLE_TELEMETRY=1`).
@@ -27,39 +28,41 @@ Stand up the sovereign substrate the whole program runs on.
 - [x] Flag dormant vendored decoration (`claude-flow` doc-shells, 9-line stubs, `swarm-lumina`)
       as `origin=absorbed` / `improve=deprecate-candidate`.
 - [x] `gen_readme.py` generates the README status matrix from the registry.
-- **Exit:** SSOT exists, README auto-generates, program is legible. **← you are here.**
+- **Exit:** SSOT exists, README auto-generates, program is legible.
 
-## Phase C — Wire evals + observability  🔲
+## Phase C — Wire evals + observability  🟡
 
-- [ ] Add **promptfoo** per-repo CI gate with `skill-used` assertion + thresholds
+- [x] Author the first **promptfoo** gate with `skill-used` assertion + thresholds
       (dispatch ≥ 0.85 / trajectory ≥ 0.90 / integration ≥ 0.80).
 - [ ] Gate the suite on **skill VERSION bumps** (the version is the contract).
-- [ ] Route traces into **Langfuse**; add **Inspect AI** for deeper agentic evals on 1–2 flagships.
+- [x] Author sink-neutral OpenLLMetry/OTel configuration with Phoenix as the local default.
+- [ ] Execute and evidence the eval and observability paths; add **Inspect AI** for 1–2 flagships.
 - [ ] Promote the first packs from `improve: todo` → `improve: done` once they pass the gate.
 - **Exit:** at least the two centers of gravity (FrankX/ACOS, Arcanea) have a passing eval gate;
       `improve=done` count > 0 in the matrix.
 
-## Phase D — Build the pgvector skill index + catalog  🔲
+## Phase D — Build the pgvector skill index + catalog  🟡
 
-- [ ] Emit `catalog.json` day-one over all indexed skill bodies.
+- [x] Emit and normalize `catalog.json` over 418 discovered skill bodies.
 - [ ] Embed with `intfloat/multilingual-e5-base` (768-dim, local) into **Postgres + pgvector**.
-- [ ] Two-stage retriever → reranker; wire the semantic router (target the documented 456× token cut).
-- [ ] CI scan of skill descriptions/frontmatter (semantic supply-chain attack class).
-- [ ] Flip `indexed: todo → done` per pack as it enters the index.
+- [x] Author the two-stage retriever → reranker and a deterministic catalog fallback.
+- [x] Run the initial skill description/frontmatter supply-chain scan.
+- [ ] Certify improve first, then flip `indexed: todo → done` per pack.
 - **Exit:** our own agents can semantically discover skills; `indexed` count climbing.
 
 ## Phase E — Register everywhere + CI automation  🟡 (scaffolded 2026-07-24)
 
-- [x] **MCP server built + validated** — `mcp-server/starlight-skill-index` (8/8 smoke tests, real
-      418-catalog query verified). First `improve=done` pack.
+- [x] **MCP server authored + locally tested** — `mcp-server/starlight-skill-index` (10/10 smoke
+      tests, real 418-catalog query verified). Independent certification remains the improve gate.
 - [x] `server.json` authored + validated (namespace `io.github.frankxai`, repo URL fixed to real repo).
 - [x] **Publish sequence authored** in [`REGISTER-PLAYBOOK.md`](REGISTER-PLAYBOOK.md) — the
       one-command-when-ready package (login → publish → syndicate → marketplace → write-back).
 - [ ] **Fire it** (needs `mcp-publisher` + network + `frankxai` login): official MCP Registry publish.
 - [ ] Syndicate to Glama / Smithery / mcp.so / PulseMCP; awesome-list PRs.
 - [ ] Own Claude Code `marketplace.json`.
-- [ ] `syndicate.py` implements publish + **write-back** of `registered:` into `registry.yaml`.
-- [ ] `refresh-status.yml` runs the write-back + `gen_readme.py` on schedule.
+- [x] `syndicate.py` emits a read-only plan and refuses mutation.
+- [ ] Implement independently reviewed publication and verified **write-back** of `registered:`.
+- [ ] Run verified status refresh + `gen_readme.py` only after external inspection.
 - **Exit:** `starlight-skill-index` `registered:` non-empty and reflected in the matrix without manual edits.
 
 ## Phase F — Consolidate guilds / executors  🔲

@@ -69,19 +69,25 @@ TINY_CATALOG = [
 ]
 
 
-def _write_catalog(tmpdir: Path) -> Path:
+def _write_catalog(tmpdir: Path, entries=None) -> Path:
     p = tmpdir / "catalog.json"
-    p.write_text(json.dumps(TINY_CATALOG, indent=2), encoding="utf-8")
+    p.write_text(json.dumps(entries or TINY_CATALOG, indent=2), encoding="utf-8")
     return p
 
 
-def _fresh_server(tmp_path: Path):
+def _fresh_server(tmp_path: Path, entries=None, skills_root=None):
     """Point the server at the tiny catalog and return the freshly-imported module."""
-    catalog = _write_catalog(tmp_path)
+    catalog = _write_catalog(tmp_path, entries)
     os.environ["STARLIGHT_CATALOG"] = str(catalog)
     os.environ.pop("STARLIGHT_DB_URL", None)  # force the fallback path
     os.environ.pop("DATABASE_URL", None)
     os.environ.pop("STARLIGHT_SCAN_REPORT", None)
+    os.environ.pop("STARLIGHT_TRANSPORT", None)
+    os.environ.pop("STARLIGHT_HTTP_HOST", None)
+    if skills_root is None:
+        os.environ.pop("STARLIGHT_SKILLS_ROOT", None)
+    else:
+        os.environ["STARLIGHT_SKILLS_ROOT"] = str(skills_root)
     import importlib
     import server as server_mod
     importlib.reload(server_mod)
@@ -134,6 +140,71 @@ def test_get_skill_missing(tmp_path):
     out = server.run_get_skill("does-not-exist")
     assert out["found"] is False
     assert "error" in out
+
+
+def test_get_skill_body_is_contained_by_explicit_trust_root(tmp_path):
+    skills = tmp_path / "skills"
+    safe_dir = skills / "safe"
+    safe_dir.mkdir(parents=True)
+    (safe_dir / "SKILL.md").write_text("safe body", encoding="utf-8")
+    outside = tmp_path / "outside.md"
+    outside.write_text("outside body", encoding="utf-8")
+    symlink = skills / "escape.md"
+    symlink.symlink_to(outside)
+    entries = [
+        {
+            "id": "safe:body",
+            "name": "safe-body",
+            "description": "safe",
+            "pack": "safe",
+            "path": "safe/SKILL.md",
+        },
+        {
+            "id": "unsafe:traversal",
+            "name": "unsafe-traversal",
+            "description": "unsafe",
+            "pack": "unsafe",
+            "path": "../outside.md",
+        },
+        {
+            "id": "unsafe:absolute",
+            "name": "unsafe-absolute",
+            "description": "unsafe",
+            "pack": "unsafe",
+            "body_path": str(outside),
+        },
+        {
+            "id": "unsafe:symlink",
+            "name": "unsafe-symlink",
+            "description": "unsafe",
+            "pack": "unsafe",
+            "path": "escape.md",
+        },
+    ]
+    server = _fresh_server(tmp_path, entries, skills)
+
+    safe = server.run_get_skill("safe:body")
+    assert safe["body_preview"] == "safe body"
+    for skill_id in ("unsafe:traversal", "unsafe:absolute", "unsafe:symlink"):
+        result = server.run_get_skill(skill_id)
+        assert result["body_path"] is None
+        assert "body_preview" not in result
+
+
+def test_transport_rejects_non_loopback_host(tmp_path):
+    server = _fresh_server(tmp_path)
+    os.environ["STARLIGHT_TRANSPORT"] = "streamable-http"
+    os.environ["STARLIGHT_HTTP_HOST"] = "0.0.0.0"
+    try:
+        try:
+            server._select_transport()
+        except ValueError as exc:
+            assert "loopback-only" in str(exc)
+        else:
+            raise AssertionError("non-loopback unauthenticated bind must fail closed")
+    finally:
+        os.environ.pop("STARLIGHT_TRANSPORT", None)
+        os.environ.pop("STARLIGHT_HTTP_HOST", None)
 
 
 def test_list_packs_counts(tmp_path):

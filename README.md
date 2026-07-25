@@ -40,11 +40,11 @@ Every pack in the registry is tracked through four states. A pack is not "done" 
    rails, and provenance (source · license · checksum) recorded.
 3. **Indexed** — the pack is *discoverable to our own agents* via the semantic skill index
    (two-stage retriever → reranker over full skill bodies).
-4. **Registered** — the pack is *published to the operator registries* (official MCP Registry,
+4. **Registered** — the pack is *externally published and inspected* in the operator registries (official MCP Registry,
    Glama / Smithery / mcp.so / PulseMCP, our own Claude Code marketplace, and awesome-lists).
 
-The [`registry.yaml`](registry.yaml) is the SSOT. CI (`refresh-status.yml`) writes the
-`registered:` field back after each successful publish.
+The [`registry.yaml`](registry.yaml) is the SSOT. CI verifies it; `registered:` changes
+only after an external record has been inspected.
 
 ---
 
@@ -76,18 +76,18 @@ OpenLLMetry OTel (authored).
 ## Status matrix
 
 <!-- STATUS-MATRIX:START -->
-![packs](https://img.shields.io/badge/packs-28-blue) ![install](https://img.shields.io/badge/install-25%2F28-brightgreen) ![improve](https://img.shields.io/badge/improve-1%2F28-green) ![indexed](https://img.shields.io/badge/indexed-5%2F28-green) ![registered](https://img.shields.io/badge/registered-0%2F28-orange) ![deprecate](https://img.shields.io/badge/deprecate-10-yellow)
+![packs](https://img.shields.io/badge/packs-28-blue) ![install](https://img.shields.io/badge/install-25%2F28-brightgreen) ![improve](https://img.shields.io/badge/improve-0%2F28-orange) ![indexed](https://img.shields.io/badge/indexed-0%2F28-orange) ![registered](https://img.shields.io/badge/registered-0%2F28-orange) ![deprecate](https://img.shields.io/badge/deprecate-10-yellow)
 
 | Pack | Origin | Ver | Install | Improve | Indexed | Registered |
 |---|---|---|:--:|:--:|:--:|---|
-| `frankx` | original | 0.0.0 | ✅ | ⬜ | ✅ | ⬜ none |
-| `agentic-creator-os` | original | 12.0.0 | ✅ | 🟡 | ✅ | ⬜ none |
-| `arcanea` | original | 0.0.0 | ✅ | ⬜ | ✅ | ⬜ none |
-| `starlight-intelligence-system` | original | 0.0.0 | ✅ | ⬜ | ✅ | ⬜ none |
-| `starlight-skill-index` | original | 0.1.0 | ✅ | ✅ | ⬜ | ⬜ none |
+| `frankx` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
+| `agentic-creator-os` | original | 12.0.0 | ✅ | 🟡 | ⬜ | ⬜ none |
+| `arcanea` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
+| `starlight-intelligence-system` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
+| `starlight-skill-index` | original | 0.1.0 | ✅ | 🟡 | ⬜ | ⬜ none |
 | `hermes` | original | 0.1.0 | ✅ | 🟡 | ⬜ | ⬜ none |
 | `starlight-gravity-engine` | original | 0.1.0 | ✅ | ⬜ | ⬜ | ⬜ none |
-| `app-studio-team` | original | 0.1.0 | ✅ | ⬜ | ✅ | ⬜ none |
+| `app-studio-team` | original | 0.1.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `gencreator-content-team` | original | 0.0.0 | 🟡 | ⬜ | ⬜ | ⬜ none |
 | `marine-agent-skills` | original | 0.1.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `prompt-engine` | original | 0.0.0 | 🟡 | ⬜ | ⬜ | ⬜ none |
@@ -97,7 +97,7 @@ OpenLLMetry OTel (authored).
 | `sentinel` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `global-claude-core` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `v-swarm` | original | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
-| `superpowers` | absorbed | 0.0.0 | ✅ | ⬜ | 🟡 | ⬜ none |
+| `superpowers` | absorbed | 0.0.0 | ✅ | ⬜ | ⬜ | ⬜ none |
 | `claude-flow` | absorbed | 3.5.80 | ✅ | ⚠️ dep | ⬜ | ⬜ none |
 | `swarm-orchestration-skill` | absorbed | 0.0.0 | ✅ | ⚠️ dep | ⬜ | ⬜ none |
 | `swarm-advanced-skill` | absorbed | 0.0.0 | ✅ | ⚠️ dep | ⬜ | ⬜ none |
@@ -131,15 +131,16 @@ python scripts/gen_readme.py --check  # CI gate: fail if the matrix is stale
 | [`PACK-QUALITY-TEMPLATE.md`](PACK-QUALITY-TEMPLATE.md) | The copy-me "Improve" pattern: evals + provenance + observability. Worked on `agentic-creator-os` / `acos-meta`. |
 | [`PACK-INDEX-TEMPLATE.md`](PACK-INDEX-TEMPLATE.md) | The copy-me "Indexed" pattern: catalog → scan → build → search router contract. |
 | [`index/`](index/) | Semantic skill index — `catalog.json` (418 skills, real), security scan (real), pgvector build + search (authored). |
-| [`mcp-server/`](mcp-server/) | **`starlight-skill-index`** MCP server — the queryable skill router (search/get/list/security). 8/8 smoke tests pass. |
+| [`mcp-server/`](mcp-server/) | **`starlight-skill-index`** MCP server — the queryable skill router (search/get/list/security). 10/10 smoke tests pass. |
 | [`portable/`](portable/) | Portable-pack installer — one pack across Claude/Codex/Gemini via symlinks + `AGENTS.md` aliasing. `acos-meta` exemplar. |
-| [`observability/`](observability/) | Self-host Langfuse compose + OpenLLMetry OTel env (authored, not run). |
+| [`observability/`](observability/) | Phoenix local-first default, optional Langfuse tier, and sink-neutral OpenLLMetry/OTel guidance. |
 | [`REGISTER-EVERYWHERE.md`](REGISTER-EVERYWHERE.md) | The registries checklist + publish-automation contract. |
 | [`REGISTER-PLAYBOOK.md`](REGISTER-PLAYBOOK.md) | The one-command-when-ready Phase E publish sequence for `starlight-skill-index`. |
 | [`docs/ecosystem-research-2026-07.md`](docs/ecosystem-research-2026-07.md) | Mid-2026 ecosystem intelligence digest (INSTALL / ADOPT / MINE / SKIP verdicts). |
 | [`scripts/gen_readme.py`](scripts/gen_readme.py) | registry.yaml → README matrix + Shields badges. |
-| [`scripts/syndicate.py`](scripts/syndicate.py) | Publish a pack to the registries + write status back (contract defined; publish TODO). |
-| `.github/workflows/` | `publish.yml`, `syndicate.yml`, `refresh-status.yml` (stubs with TODOs). |
+| [`scripts/syndicate.py`](scripts/syndicate.py) | Read-only publication plan; refuses mutation until real adapters and evidence write-back exist. |
+| [`certifications/`](certifications/) | Exact-byte pack certification receipts, distinct from package and registry publication. |
+| `.github/workflows/` | Fail-closed quality, registry preflight, syndication planning, and README truth checks. |
 
 ---
 
