@@ -1,0 +1,61 @@
+{
+  "schema_version": "starlight.repo_profile.v2",
+  "repo": {
+    "id": "starlight-agentic-os",
+    "classification": "agent-substrate",
+    "operating_unit": "agentic-os",
+    "lane": "governance",
+    "lifecycle": "active",
+    "priority": "tier-0",
+    "canonical_source": {
+      "kind": "github",
+      "ref": "frankxai/starlight-agentic-os"
+    },
+    "default_branch": "main",
+    "visibility": "public"
+  },
+  "ownership": {
+    "human_owner": "Frank",
+    "steward_team": "starlight-agentic-os",
+    "support_lane": "agent-platform"
+  },
+  "commands": {
+    "health": ["python3 scripts/validate_repo.py"],
+    "lint": ["python3 scripts/gen_readme.py --check"],
+    "typecheck": ["python3 -m compileall -q index mcp-server portable scripts"],
+    "test": [
+      "python3 mcp-server/test_server.py",
+      "python3 -m unittest discover -s tests -p 'test_*.py'",
+      "bash portable/verify-portability.sh portable/packs/acos-meta",
+      "python3 scripts/verify_certifications.py --all"
+    ],
+    "build": [],
+    "security": ["python3 scripts/validate_repo.py"]
+  },
+  "data": {
+    "classification": "public",
+    "persistent_store": ["git"],
+    "pii_allowed": false,
+    "retention_policy_ref": "SECURITY.md"
+  },
+  "delivery": {
+    "providers": ["github"],
+    "projects": [],
+    "domains": [],
+    "promotion_policy": "independent-verifier-and-named-human-approval",
+    "rollback": "Revert the bounded commit or restore the previous certified pack version."
+  },
+  "agentic": {
+    "skills": ["github", "world-class-web-release", "motion-design"],
+    "write_scopes": ["assigned-task-paths-only"],
+    "handoff": "Report artifacts, checks, independent verdict, approvals, rollback, and next bounded action."
+  },
+  "gates": {
+    "release": [
+      "independent-verifier",
+      "named-human-approval",
+      "exact-pack-certification",
+      "external-registry-proof"
+    ]
+  }
+}

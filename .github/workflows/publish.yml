@@ -1,34 +1,32 @@
-name: publish
-
-# Publish a pack's MCP server to the Official MCP Registry on a version tag.
-# STUB — wire the mcp-publisher step per REGISTER-EVERYWHERE.md channel 1.
+name: Registry release preflight
 
 on:
-  push:
-    tags:
-      - "v*.*.*"        # semver tags only — the version IS the contract
   workflow_dispatch:
     inputs:
       pack:
         description: "pack name as listed in registry.yaml"
         required: true
+        default: "starlight-skill-index"
 
 permissions:
   contents: read
-  id-token: write       # GitHub OIDC — the MCP Registry namespace is OIDC-authenticated
 
 jobs:
-  publish:
+  preflight:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Precondition — pack must be improve=done
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install --disable-pip-version-check build -r requirements-dev.txt
+      - run: python3 scripts/validate_repo.py
+      - run: python3 scripts/verify_certifications.py "${{ inputs.pack }}"
+      - run: python3 -m build mcp-server
+      - name: Stop before public mutation
         run: |
-          echo "TODO: parse registry.yaml; fail unless status.improve == 'done' for the pack."
-      - name: Validate .mcp/server.json
-        run: echo "TODO: validate server.json against the official schema."
-      - name: Publish to Official MCP Registry
-        run: |
-          # TODO(Phase E): install mcp-publisher, authenticate via OIDC (namespace = frankxai),
-          #   mcp-publisher publish --file .mcp/server.json
-          echo "TODO: mcp-publisher publish"
+          echo "Preflight passed. Public PyPI/MCP Registry publication remains a named-human gate."
+          echo "Follow REGISTER-PLAYBOOK.md after inspecting the built artifact and package identity."

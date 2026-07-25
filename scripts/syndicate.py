@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """
-syndicate.py — publish a pack to the operator registries, then write the result
-back into registry.yaml (the SSOT). STUB: contract defined, network calls TODO.
+syndicate.py — produce the governed registry publication plan.
 
-The publish/write-back contract this script MUST honor:
+The future publish/write-back implementation MUST honor:
 
   1. INPUT      : a pack name present in registry.yaml.
   2. PRECONDS   : pack.status.improve == "done"  (never syndicate un-hardened packs)
@@ -22,7 +21,7 @@ The publish/write-back contract this script MUST honor:
                   {ts, pack, version, registry, result, url}  (append-only, mirrors
                   the hermes/SIS ledger pattern — the log is the truth, not the API).
 
-Nothing here mutates a registry yet. Wire step 3 per REGISTER-EVERYWHERE.md.
+Nothing here mutates a registry. Non-dry-run execution fails closed.
 """
 from __future__ import annotations
 
@@ -59,7 +58,7 @@ def find(data: dict, name: str) -> dict | None:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Syndicate a pack to operator registries (STUB).")
+    ap = argparse.ArgumentParser(description="Plan pack syndication without mutation.")
     ap.add_argument("pack", help="pack name as listed in registry.yaml")
     ap.add_argument("--dry-run", action="store_true", help="print plan, publish nothing")
     args = ap.parse_args()
@@ -86,10 +85,12 @@ def main() -> int:
     if args.dry_run or not todo:
         return 0
 
-    # TODO(Phase E): implement publish steps 3-6 per REGISTER-EVERYWHERE.md,
-    # then write status.registered back into registry.yaml and call gen_readme.py.
-    print("[stub] publish + write-back not yet implemented — see REGISTER-EVERYWHERE.md")
-    return 0
+    print(
+        "REFUSED: publication adapters and evidence write-back are not implemented. "
+        "Run with --dry-run or follow REGISTER-PLAYBOOK.md after named-human approval.",
+        file=sys.stderr,
+    )
+    return 2
 
 
 if __name__ == "__main__":

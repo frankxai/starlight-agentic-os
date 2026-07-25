@@ -13,7 +13,7 @@ on:
   workflow_dispatch: {}
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   regenerate:
@@ -24,10 +24,8 @@ jobs:
         with:
           python-version: "3.13"
       - name: Install deps
-        run: pip install pyyaml
+        run: pip install -r requirements-dev.txt
       - name: Verify matrix is current (gate)
         run: python scripts/gen_readme.py --check
-      # TODO(Phase E): before regenerating, poll each registry for this org's published
-      # servers and write confirmed `registered:` ids back into registry.yaml, then:
-      #   python scripts/gen_readme.py
-      #   git commit + push if changed (guarded so scheduled runs can self-heal the matrix)
+      - name: Verify repository lifecycle invariants
+        run: python scripts/validate_repo.py

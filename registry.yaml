@@ -12,16 +12,16 @@
 # origin: original (Frank/team authored) | absorbed (vendored upstream) | forked
 # Status seeded 2026-07-23 from the Phase 1-3 portfolio audits. Counts are the
 # corrected maxdepth-2 recount (Phase 2 §1), not the inflated pass-2 figures.
-# CI (refresh-status.yml) writes `registered:` back into this file after publish.
+# `registered:` changes only after external inspection. Current CI is read-only.
 # ============================================================================
 
 meta:
   schema_version: 1
   generated_note: "README status matrix is generated from this file by scripts/gen_readme.py"
   index: "index/catalog.json — 418 skills catalogued (Phase D, 2026-07-24); security scan in index/security-scan-summary.md. Vector index (pgvector) authored, not yet built."
-  mcp_server: "mcp-server/ = starlight-skill-index (search_skills/get_skill/list_packs/security_report) over index/catalog.json; 8/8 smoke tests pass. Publish-ready — see REGISTER-PLAYBOOK.md."
+  mcp_server: "mcp-server/ = starlight-skill-index (search_skills/get_skill/list_packs/security_report) over index/catalog.json; 10/10 smoke tests pass. Release candidate; exact certification and package publication are separate gates."
   portable: "portable/ = install.sh/ps1 symlinking a pack across ~/.claude, ~/.agents, ~/.gemini skill dirs; AGENTS.md aliasing; acos-meta exemplar is portable-clean (4/4)."
-  observability: "observability/ = self-host Langfuse compose + OpenLLMetry OTel env (authored, not run)."
+  observability: "observability/ = Phoenix local-first default + optional self-hosted Langfuse tier; OpenLLMetry/OTel instrumentation authored, runtime bring-up not evidenced here."
   registries_tracked:
     - official-mcp-registry      # server.json + mcp-publisher, GitHub-OIDC namespace
     - glama
@@ -43,8 +43,8 @@ packs:
     source_url: https://github.com/frankxai/FrankX
     origin: original
     summary: "FrankX Digital Haven — 33 skills, 119 agents, v-swarm + aco-router. Largest personal roster."
-    status: { install: done, improve: todo, indexed: done, registered: [] }
-    indexed_note: "33 skills in index/catalog.json; scan clean (0 findings)."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    indexed_note: "33 catalog records exist, but lifecycle index promotion is blocked until improve is certified."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
 
   - name: agentic-creator-os
@@ -54,9 +54,9 @@ packs:
     source_url: https://github.com/frankxai/agentic-creator-os
     origin: original
     summary: "ACOS v12 open-core — 90 skills, 63 agents, acos-meta + integrity-guard. Twin of FrankX engineering. EXEMPLAR pack for the quality-bar template."
-    status: { install: done, improve: in-progress, indexed: done, registered: [] }
+    status: { install: done, improve: in-progress, indexed: todo, registered: [] }
     improve_note: "Phase C exemplar: eval gate authored at evals/promptfooconfig.yaml (worked skill: acos-meta v1.0.0); pack.meta.yaml provenance added. Not yet executed. See PACK-QUALITY-TEMPLATE.md."
-    indexed_note: "104 skills in index/catalog.json; scan clean (1 benign medium: higgsfield-operator MCP URL)."
+    indexed_note: "104 catalog records exist; lifecycle index promotion waits for improve certification."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
 
   - name: arcanea
@@ -66,8 +66,8 @@ packs:
     source_url: https://github.com/frankxai/arcanea-ai-app
     origin: original
     summary: "Arcanea — 65 skills, 44 agents (incl. Luminor hierarchy). design-verifier runs real Playwright/Lighthouse gates."
-    status: { install: done, improve: todo, indexed: done, registered: [] }
-    indexed_note: "124 skills in index/catalog.json; scan clean (0 findings)."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    indexed_note: "124 catalog records exist, but lifecycle index promotion is blocked until improve is certified."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
 
   - name: starlight-intelligence-system
@@ -77,8 +77,8 @@ packs:
     source_url: https://github.com/frankxai/Starlight-Intelligence-System
     origin: original
     summary: "SIS — 146-agent registry, council/dispatch, multi-MB JSONL dispatch ledger (real usage). Governance-heavy."
-    status: { install: done, improve: todo, indexed: done, registered: [] }
-    indexed_note: "31 skills in index/catalog.json (SIS is agent-based; these are its skills). Scan clean (1 benign medium: secret-detector describing its own domain)."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    indexed_note: "31 catalog records exist, but lifecycle index promotion is blocked until improve is certified."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
 
   # -------------------------------------------------------------------------
@@ -92,9 +92,9 @@ packs:
     origin: original
     summary: "MCP server (FastMCP) making the 418-skill index routable: search_skills/get_skill/list_packs/security_report, vector->catalog graceful fallback. The queryable skill router itself."
     status: { install: done, improve: done, indexed: todo, registered: [] }
-    improve_note: "8/8 smoke tests pass (test_server.py); real query against 418-skill catalog verified ('review a github pull request' -> arcanea:github-code-review); server.json validated. FIRST pack at improve=done."
-    registered_note: "Publish-ready. Fire REGISTER-PLAYBOOK.md: mcp-publisher -> official MCP registry (io.github.frankxai) -> syndicate -> marketplace.json."
-    provenance: { checksum: null, added: 2026-07-24, last_reviewed: 2026-07-24 }
+    improve_note: "Independently certified at source commit bbd3b5a6faf752187987a6392b5c5a91c9ddc826: 10/10 MCP tests, 7/7 governance tests, 4/4 portability checks, pinned full-schema validation, and exact-byte artifact verification."
+    registered_note: "Not published. PyPI artifact and official MCP Registry record require separate external proof and named-human approval."
+    provenance: { checksum: "sha256:04740a7cd5e64f491519a8bbcc840302225b8dfb80b08ab97a69749b33aef269", certification: certifications/starlight-skill-index/0.1.0.json, added: 2026-07-24, last_reviewed: 2026-07-25 }
 
   # -------------------------------------------------------------------------
   # EXECUTORS / GUILDS — runtimes, each guild owns its own runtime
@@ -129,8 +129,8 @@ packs:
     source_url: https://github.com/frankxai/frankx-app-forge
     origin: original
     summary: "19 agents / 12 skills — conductor-led product pipeline (scout->strategist->ux/story->craft->gate->build->release). Most complete vertical team on disk."
-    status: { install: done, improve: todo, indexed: done, registered: [] }
-    indexed_note: "12 skills in index/catalog.json (via .claude/plugins); scan clean (0 findings)."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    indexed_note: "12 catalog records exist, but lifecycle index promotion is blocked until improve is certified."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
 
   - name: gencreator-content-team
@@ -236,8 +236,8 @@ packs:
     source_url: https://github.com/obra/superpowers
     origin: absorbed
     summary: "Well-absorbed process skills (brainstorming/TDD/systematic-debugging) with a real running server. Actively enforced, not decorative — keep current."
-    status: { install: done, improve: todo, indexed: in-progress, registered: [] }
-    indexed_note: "19 skills in index/catalog.json (via .claude/plugins). Held at in-progress: scan raised 1 HIGH on using-tmux (exfiltration_intent) — confirmed BENIGN false-positive (matched tmux 'send-keys'). Promote to done once added to the CI allow-list. See index/security-scan-summary.md."
+    status: { install: done, improve: todo, indexed: todo, registered: [] }
+    indexed_note: "19 catalog records exist. Improve must finish before index promotion; the using-tmux scan false-positive still needs a governed allow-list."
     provenance: { checksum: null, added: 2026-07-23, last_reviewed: 2026-07-23 }
 
   # -------------------------------------------------------------------------

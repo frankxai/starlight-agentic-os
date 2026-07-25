@@ -1,0 +1,43 @@
+{
+  "schema_version": "starlight.pack_certification.v1",
+  "pack": "starlight-skill-index",
+  "version": "0.1.0",
+  "repository": "frankxai/starlight-agentic-os",
+  "artifact_root": "mcp-server",
+  "source_commit": "bbd3b5a6faf752187987a6392b5c5a91c9ddc826",
+  "artifact": {
+    "bytes": 58177,
+    "file_count": 9,
+    "sha256": "04740a7cd5e64f491519a8bbcc840302225b8dfb80b08ab97a69749b33aef269"
+  },
+  "tests": [
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 mcp-server/test_server.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m unittest discover -s tests -p 'test_*.py'",
+      "exit_code": 0
+    },
+    {
+      "command": "bash portable/verify-portability.sh portable/packs/acos-meta",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/gen_readme.py --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m compileall -q index mcp-server portable scripts",
+      "exit_code": 0
+    }
+  ],
+  "maker": "OpenAI Codex",
+  "verifier": "codex:/root/production_visual_audit",
+  "verified_at": "2026-07-25T05:06:00+02:00",
+  "verdict": "pass"
+}

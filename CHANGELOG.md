@@ -2,6 +2,34 @@
 
 All notable changes to the Starlight Agentic OS command center. Semver.
 
+## [0.7.0] — 2026-07-25
+
+### Added
+- Repository constitution, authority boundaries, testing/security runbooks, and
+  machine-readable agent harness.
+- Fail-closed quality workflow and deterministic lifecycle validator.
+- Exact-byte pack certification digest and verification tooling.
+- Adversarial tests for path traversal, symlink escape, non-loopback HTTP
+  exposure, lifecycle shortcuts, and certification-path containment.
+- A vendored, content-pinned official MCP `2025-12-11` schema plus full Draft 7
+  manifest validation and regression mutations.
+
+### Changed
+- MCP manifest aligned to the current stable `2025-12-11` registry schema.
+- Router package URLs now resolve to the canonical repository and its PyPI
+  README carries the required MCP ownership token.
+- `starlight-skill-index` is now `improve=done` after independent verification
+  of source commit `bbd3b5a6faf752187987a6392b5c5a91c9ddc826` and its exact
+  58,177-byte artifact; indexing and public registration remain separate gates.
+- Publishing and syndication paths no longer claim success through TODO stubs.
+- Rolled six premature `indexed` states back to `todo`; catalog presence is now
+  explicitly distinct from lifecycle promotion.
+- Shared HTTP is restricted to unauthenticated `127.0.0.1`, skill-body reads
+  require an explicit containment root, and certification verification cannot
+  pass with an empty set.
+- Corrected `ROADMAP.md` so authored, executed, certified, and published work
+  are separate facts.
+
 ## [0.6.0] — 2026-07-24
 
 Two architecture fixes + domain inventory.
@@ -43,8 +71,9 @@ Phase E prep — MCP skill router + portable-pack installer + observability inte
 - `observability/` — self-host Langfuse `docker-compose` + OpenLLMetry `otel.env.example` +
   `INSTRUMENTATION.md` (authored, not run — secrets via `${VAR:?}` substitution, `CHANGE_ME_*` placeholders).
 - `REGISTER-PLAYBOOK.md` — the authored (not run) Phase E publish sequence.
-- `registry.yaml` — new pack `starlight-skill-index` (**first `improve=done`**: passing smoke tests +
-  validated server.json; publish-ready). `meta` records mcp_server / portable / observability.
+- `registry.yaml` — new pack `starlight-skill-index`. This release recorded it as the first
+  `improve=done`; v0.7.0 rolled that premature claim back after independent verification found
+  missing exact-byte and security evidence.
 
 ### Changed
 - `mcp-server/server.json` `repository.url` corrected from `starlight-skill-index` to the real repo
@@ -72,10 +101,10 @@ Phase D — semantic skill index (stdlib path executed; vector path authored).
 - `PACK-INDEX-TEMPLATE.md` — the copy-me "Indexed" pattern (catalog → scan → build → search).
 
 ### Changed
-- `registry.yaml` — `indexed` set for catalogued packs: `done` for `agentic-creator-os`, `arcanea`,
+- `registry.yaml` — catalogued packs were marked `indexed: done` for `agentic-creator-os`, `arcanea`,
   `frankx`, `starlight-intelligence-system`, `app-studio-team`; `in-progress` for `superpowers`
-  (benign HIGH false-positive pending CI allow-list). `meta.index` records the catalog. Matrix
-  regenerated (indexed column now 5 done + 1 in-progress).
+  (benign HIGH false-positive pending CI allow-list). v0.7.0 rolled these states back because
+  catalog presence cannot skip the improve gate.
 - README repo-map lists `PACK-INDEX-TEMPLATE.md` and `index/`.
 
 ### Not run (documented)
