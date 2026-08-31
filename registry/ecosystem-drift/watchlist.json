@@ -1,0 +1,193 @@
+{
+  "schema": "starlight.ecosystem_drift_watchlist.v1",
+  "owner": "starlight-agentic-os",
+  "canonical_issue_repo": "frankxai/starlight-agentic-os",
+  "parent_issue": 7,
+  "related": {
+    "sis_architecture_pr": "https://github.com/frankxai/Starlight-Intelligence-System/pull/120",
+    "sis_epic": "https://github.com/frankxai/Starlight-Intelligence-System/issues/121"
+  },
+  "materiality": {
+    "alert_on": [
+      "breaking",
+      "schema",
+      "manifest",
+      "auth",
+      "oauth",
+      "marketplace_policy",
+      "submission",
+      "deprecation",
+      "pricing",
+      "spec",
+      "host_requirement"
+    ],
+    "ignore": ["nav_chrome", "cookie_banner", "changelog_index_only"]
+  },
+  "sources": [
+    {
+      "id": "openai-plugins",
+      "ecosystem": "openai",
+      "kind": "docs",
+      "fetch": "http",
+      "url": "https://developers.openai.com/plugins.md",
+      "prefer_markdown": true
+    },
+    {
+      "id": "openai-plugins-quickstart",
+      "ecosystem": "openai",
+      "kind": "docs",
+      "fetch": "http",
+      "url": "https://developers.openai.com/plugins/quickstart.md",
+      "prefer_markdown": true
+    },
+    {
+      "id": "openai-plugin-architecture",
+      "ecosystem": "openai",
+      "kind": "docs",
+      "fetch": "http",
+      "url": "https://developers.openai.com/plugins/concepts/plugins.md",
+      "prefer_markdown": true
+    },
+    {
+      "id": "openai-apps-mcp",
+      "ecosystem": "openai",
+      "kind": "docs",
+      "fetch": "http",
+      "url": "https://developers.openai.com/apps-sdk/concepts/mcp-server.md",
+      "prefer_markdown": true
+    },
+    {
+      "id": "openai-chatgpt-connect",
+      "ecosystem": "openai",
+      "kind": "docs",
+      "fetch": "http",
+      "url": "https://developers.openai.com/apps-sdk/deploy/connect-chatgpt.md",
+      "prefer_markdown": true
+    },
+    {
+      "id": "openai-mcp-apps",
+      "ecosystem": "openai",
+      "kind": "docs",
+      "fetch": "http",
+      "url": "https://developers.openai.com/apps-sdk/mcp-apps-in-chatgpt.md",
+      "prefer_markdown": true
+    },
+    {
+      "id": "claude-plugin-marketplaces",
+      "ecosystem": "claude",
+      "kind": "docs",
+      "fetch": "http",
+      "url": "https://code.claude.com/docs/en/plugin-marketplaces.md",
+      "prefer_markdown": true
+    },
+    {
+      "id": "claude-discover-plugins",
+      "ecosystem": "claude",
+      "kind": "docs",
+      "fetch": "http",
+      "url": "https://code.claude.com/docs/en/discover-plugins.md",
+      "prefer_markdown": true
+    },
+    {
+      "id": "claude-plugins-official",
+      "ecosystem": "claude",
+      "kind": "marketplace",
+      "fetch": "github_repo",
+      "repo": "anthropics/claude-plugins-official"
+    },
+    {
+      "id": "gemini-cli-extensions",
+      "ecosystem": "gemini",
+      "kind": "docs",
+      "fetch": "http",
+      "url": "https://geminicli.com/docs/extensions/",
+      "prefer_markdown": true
+    },
+    {
+      "id": "gemini-cli-extensions-reference",
+      "ecosystem": "gemini",
+      "kind": "docs",
+      "fetch": "http",
+      "url": "https://raw.githubusercontent.com/google-gemini/gemini-cli/main/docs/extensions/reference.md"
+    },
+    {
+      "id": "grok-remote-mcp",
+      "ecosystem": "grok",
+      "kind": "docs",
+      "fetch": "http",
+      "url": "https://docs.x.ai/developers/tools/remote-mcp.md",
+      "prefer_markdown": true
+    },
+    {
+      "id": "xai-plugin-marketplace",
+      "ecosystem": "grok",
+      "kind": "marketplace",
+      "fetch": "github_repo",
+      "repo": "xai-org/plugin-marketplace"
+    },
+    {
+      "id": "xai-plugin-marketplace-json",
+      "ecosystem": "grok",
+      "kind": "schema",
+      "fetch": "http",
+      "url": "https://raw.githubusercontent.com/xai-org/plugin-marketplace/main/.grok-plugin/marketplace.json"
+    },
+    {
+      "id": "manus-custom-mcp",
+      "ecosystem": "manus",
+      "kind": "docs",
+      "fetch": "http",
+      "url": "https://manus.im/docs/integrations/custom-mcp"
+    },
+    {
+      "id": "hermes-docs",
+      "ecosystem": "hermes",
+      "kind": "docs",
+      "fetch": "http",
+      "url": "https://hermes-agent.nousresearch.com/docs"
+    },
+    {
+      "id": "mcp-spec-latest",
+      "ecosystem": "mcp",
+      "kind": "spec",
+      "fetch": "http",
+      "url": "https://modelcontextprotocol.io/specification/latest.md",
+      "prefer_markdown": true
+    },
+    {
+      "id": "mcp-registry-openapi",
+      "ecosystem": "mcp",
+      "kind": "schema",
+      "fetch": "http",
+      "url": "https://registry.modelcontextprotocol.io/openapi.json"
+    },
+    {
+      "id": "mcp-ext-apps",
+      "ecosystem": "mcp",
+      "kind": "spec",
+      "fetch": "github_repo",
+      "repo": "modelcontextprotocol/ext-apps"
+    },
+    {
+      "id": "copilot-cli-plugins",
+      "ecosystem": "copilot",
+      "kind": "docs",
+      "fetch": "http",
+      "url": "https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-plugin-reference"
+    },
+    {
+      "id": "copilot-mcp",
+      "ecosystem": "copilot",
+      "kind": "docs",
+      "fetch": "http",
+      "url": "https://docs.github.com/en/copilot/using-github-copilot/using-extensions-to-integrate-external-tools-with-copilot-chat"
+    },
+    {
+      "id": "agentskills-spec",
+      "ecosystem": "skills",
+      "kind": "spec",
+      "fetch": "github_repo",
+      "repo": "agentskills/agentskills"
+    }
+  ]
+}

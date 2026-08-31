@@ -137,6 +137,7 @@ python scripts/gen_readme.py --check  # CI gate: fail if the matrix is stale
 | [`REGISTER-EVERYWHERE.md`](REGISTER-EVERYWHERE.md) | The registries checklist + publish-automation contract. |
 | [`REGISTER-PLAYBOOK.md`](REGISTER-PLAYBOOK.md) | The one-command-when-ready Phase E publish sequence for `starlight-skill-index`. |
 | [`docs/ecosystem-research-2026-07.md`](docs/ecosystem-research-2026-07.md) | Mid-2026 ecosystem intelligence digest (INSTALL / ADOPT / MINE / SKIP verdicts). |
+| [`docs/ECOSYSTEM-DRIFT.md`](docs/ECOSYSTEM-DRIFT.md) | Weekly official plugin/MCP/marketplace drift → GitHub refinement queue. |
 | [`scripts/gen_readme.py`](scripts/gen_readme.py) | registry.yaml → README matrix + Shields badges. |
 | [`scripts/syndicate.py`](scripts/syndicate.py) | Read-only publication plan; refuses mutation until real adapters and evidence write-back exist. |
 | [`certifications/`](certifications/) | Exact-byte pack certification receipts, distinct from package and registry publication. |
