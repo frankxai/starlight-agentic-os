@@ -57,3 +57,13 @@ This repository references, but does not redefine:
 - `starlight.operation_receipt.v1`
 - `starlight.run_receipt.v1`
 - design release evidence from `starlight-design-intelligence`
+
+## Ecosystem drift
+
+Official plugin/MCP/marketplace sources live in
+`registry/ecosystem-drift/watchlist.json`. The collector
+(`scripts/ecosystem_drift_collect.py`) is deterministic and no-LLM. It writes
+local state under the Hermes cache, not git. A digest change is evidence of
+source movement, not an adoption or publication decision. Material events open
+or update one `[ecosystem-drift]` GitHub issue; they do not create repositories
+or rewrite PRs. See `docs/ECOSYSTEM-DRIFT.md`.

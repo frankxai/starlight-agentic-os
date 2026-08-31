@@ -75,6 +75,13 @@ Stand up the sovereign substrate the whole program runs on.
 - [ ] Draw the canonical **memory-repo boundary** (second-brain-os vs starlight-memory vs second-brain).
 - **Exit:** each guild owns a hardened runtime under a shared contract; dead inventory removed.
 
+## Release Fabric — official ecosystem drift  🟡 ([#7](https://github.com/frankxai/starlight-agentic-os/issues/7))
+
+- [x] Official source watchlist + changed-only collector (`docs/ECOSYSTEM-DRIFT.md`).
+- [x] Weekly Hermes review that feeds one GitHub refinement queue.
+- [ ] Daily published-link checks for live releases.
+- [ ] Versioned release-pack record in `registry.yaml`.
+
 ---
 
 ### Sequencing rule
