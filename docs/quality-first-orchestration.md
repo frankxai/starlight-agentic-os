@@ -8,7 +8,7 @@ The quality-first orchestration candidate spans existing owners:
 | Runtime contracts and five tested patterns | `starlight-swarm` |
 | Ten fixtures and 60-cell evaluation plan | `starlight-evals` |
 | Runnable community kit | `agentic-creator-os` |
-| Codex invocation planning adapter | `arcanea-orchestrator` |
+| Codex invocation planning adapter | `agentic-creator-os` |
 
 Implementation branch: `codex/orchestration-quality-20260924`. These are candidate
 artifacts, not a certification or registry publication. This command center does
@@ -24,3 +24,6 @@ Follow the existing RUNBOOK for certification and registry changes. The lead own
 integration and resolves failed checks; company/domain roles do not supersede
 repository ownership, budget, review or publication gates. No lifecycle status is
 changed by this documentation addition.
+
+The Arcanea Orchestrator remote is archived/read-only. Its candidate lane is
+preserved locally; the active reusable planner is included in ACOS instead.
