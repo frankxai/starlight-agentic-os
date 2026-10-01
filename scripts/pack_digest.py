@@ -6,6 +6,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
+import stat
 from pathlib import Path
 
 IGNORED_PARTS = {
@@ -20,9 +22,19 @@ IGNORED_PARTS = {
 IGNORED_SUFFIXES = {".pyc", ".pyo"}
 
 
+def is_link_or_reparse_point(path: Path) -> bool:
+    if path.is_symlink():
+        return True
+    try:
+        attributes = getattr(os.lstat(path), "st_file_attributes", 0)
+    except OSError:
+        return False
+    return bool(attributes & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0))
+
+
 def digest_directory(root: Path) -> dict[str, object]:
     root = root.expanduser()
-    if root.is_symlink():
+    if is_link_or_reparse_point(root):
         raise ValueError(f"artifact root must not be a symlink: {root}")
     root = root.resolve()
     if not root.is_dir():
@@ -31,9 +43,13 @@ def digest_directory(root: Path) -> dict[str, object]:
     digest = hashlib.sha256()
     file_count = 0
     byte_count = 0
-    for path in sorted(root.rglob("*")):
-        if path.is_symlink():
-            raise ValueError(f"artifact root contains a symlink: {path.relative_to(root)}")
+    paths = sorted(
+        root.rglob("*"),
+        key=lambda candidate: candidate.relative_to(root).as_posix().encode("utf-8"),
+    )
+    for path in paths:
+        if is_link_or_reparse_point(path):
+            raise ValueError(f"artifact root contains a symlink or reparse point: {path.relative_to(root)}")
         if not path.is_file():
             continue
         relative = path.relative_to(root)
